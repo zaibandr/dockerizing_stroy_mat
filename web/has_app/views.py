@@ -1,0 +1,103 @@
+# Create your views here.
+from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
+
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView
+
+from django.contrib.auth.decorators import login_required
+
+from django.utils import timezone
+
+from django_tables2 import RequestConfig
+from .tables import OrdersTable
+
+from django.contrib.auth.models import User
+from .models import Order
+from .forms import NewOrderForm, UpdateOrderForm, EditOrderForm
+
+import datetime
+
+
+def home_page(request):
+    redirect('/orders/')
+
+
+def new_order_form(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = NewOrderForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            ###########################
+            # set author field in form current user
+            # https://stackoverflow.com/questions/18246326/in-django-how-do-i-set-user-field-in-form-to-the-currently-logged-in-user
+            ###########################
+            new_order = form.save(commit=False)
+
+            new_order.manager = User.objects.get(username=request.user)
+            new_order.save()
+
+            last_order_url = Order.objects.last().get_absolute_url()
+            return HttpResponseRedirect(last_order_url)
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = NewOrderForm()
+
+    return render(request, "has_app/new_order.html", {'form': form})
+
+
+@login_required()
+def orders(request, status='all'):
+    all_orders_sqs = Order.objects.all()
+
+    all_orders = OrdersTable(all_orders_sqs)
+
+    RequestConfig(request).configure(all_orders)
+    all_orders.paginate(page=request.GET.get('page', 1), per_page=10)
+
+    context = {
+        'orders': all_orders,
+    }
+
+    return render(request, 'has_app/orders.html', context)
+
+
+class OrderDetailView(DetailView):
+
+    model = Order
+
+    def get_context_data(self, **kwargs):
+        context = super(OrderDetailView, self).get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        return context
+
+
+class OrderUpdate(UpdateView):
+    model = Order
+    form_class = UpdateOrderForm
+
+    template_name_suffix = '_update_form'
+
+    def post(self, request, **kwargs):
+        request.POST = request.POST.copy()
+        print(request.POST)
+        print(request.POST['time_completed'])
+        if request.POST['status'] == 'CMPLTD' and request.POST['time_completed'] == '':
+            request.POST['time_completed'] = datetime.datetime.now()
+        return super(OrderUpdate, self).post(request, **kwargs)
+
+
+class EditOrder(UpdateView):
+    model = Order
+    form_class = EditOrderForm
+    template_name_suffix = '_edit_form'
+
+
+class OrderCreate(CreateView):
+    model = Order
+    form_class = NewOrderForm
+
+    template_name_suffix = '_create_form'

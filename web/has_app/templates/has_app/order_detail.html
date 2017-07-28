@@ -1,0 +1,99 @@
+{% extends 'has_app/base.html' %}
+{% load static %}
+{% load render_table from django_tables2 %}
+{% load bootstrap3 %}
+{% block content %}
+
+    <div id="order_info" class="container">
+        <h2>Заказ номер: {{ order.pk }} </h2>
+
+
+    <p>Наименование: {{ order.product.name }}</p>
+    <p>Адрес: {{ order.address }}</p>
+    <p>{{ order.status }}</p>
+
+    <p>Менеджер: {{ order.manager }}</p>
+    <p>Стоимость с доставкой: {{ order.cost }} р.</p>
+    <p>Время создания: {{ order.time_created }}</p>
+    <p>Время обновления: {{ order.time_updated }}</p>
+    <p>{{ order.time_completed }}</p>
+
+        {% if order.status == 'CRTD' or order.status == 'Создан' %}
+            <p>Заказ ожидает обработки</p>
+            <p>Прошло времени: {{ order.time_created|timesince:now }}</p>
+        {% elif order.status == 'PRCSD' or order.status == 'В обработке' %}
+            <p>Заказ обрабатывается</p>
+            <p>Прошло времени: {{ order.time_created|timesince:now }}</p>
+        {% else %}
+            <p>Заказ обработан</p>
+            <p>Обработан за: {{ order.time_created|timesince:order.time_completed }}</p>
+        {% endif %}
+
+
+    {% buttons %}
+        <a href="{% url 'orders' %}" class="btn btn-default" role="button">Все заказы</a>
+        <a href="edit/" class="btn btn-primary" role="button">Изменить</a>
+        <a href="update/" class="btn btn-info" role="button">Обновить</a>
+    {% endbuttons %}
+
+    </div>
+
+{#    <script data-require="jquery@2.2.4" data-semver="2.2.4" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>#}
+
+{#    <script type="text/javascript">#}
+{#        setInterval(function () {#}
+{#            $("#order_info").load("{% url 'order-detail' pk=order.pk %}");#}
+{#        }, 15000);#}
+{#    </script>#}
+
+
+    <div id="ya_map" class="container"></div>
+
+
+
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+    <script type="text/javascript">
+        var myMap;
+
+        // Дождёмся загрузки API и готовности DOM.
+        ymaps.ready(init);
+
+
+
+        function init () {
+            // Создание экземпляра карты и его привязка к контейнеру с
+            // заданным id ("map").
+            myMap = new ymaps.Map('ya_map', {
+                // При инициализации карты обязательно нужно указать
+                // её центр и коэффициент масштабирования.
+                center: [55.76, 37.64], // Москва
+                zoom: 8,
+                //controls: ['routeEditor', 'geolocationControl', 'searchControl', 'zoomControl']
+            }, {
+                searchControlProvider: 'yandex#search'
+            });
+
+            var myGeocoder = ymaps.geocode("{{ order.address }}", {iconCaption: "{{ order.address }}", preset: 'islands#greenDotIconWithCaption'});
+{#            myGeocoder.properties.iconCaption = "{{ order.address }}";#}
+            myGeocoder.then(
+                function (res) {
+                    myMap.geoObjects.add(res.geoObjects);
+
+                },
+                function (err) {
+                    // обработка ошибки
+                }
+            );
+
+            //document.getElementById('destroyButton').onclick = function () {
+            //    // Для уничтожения используется метод destroy.
+            //    myMap.destroy();
+            //};
+
+        };
+
+
+    </script>
+
+
+{% endblock %}

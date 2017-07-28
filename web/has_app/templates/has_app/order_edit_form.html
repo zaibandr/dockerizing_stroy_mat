@@ -1,0 +1,43 @@
+{% extends 'has_app/base.html' %}
+{% load static %}
+{% load bootstrap3 %}
+{% block content %}
+    <h1>Изменить заказ</h1>
+        <form action="{% url 'order_edit' pk=order.pk%}" method="post" class="form-horizontal">
+            {% csrf_token %}
+            {% bootstrap_form form layout="horizontal"%}
+
+            {% buttons %}
+                {% buttons submit='Изменить' layout='horizontal' %}{% endbuttons %}
+            {% endbuttons %}
+
+        </form>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css" />
+
+
+    <script type="text/javascript">
+        $('.selectpicker').selectpicker({
+          });
+    </script>
+
+
+    <link href="https://cdn.jsdelivr.net/npm/suggestions-jquery@17.5.0/dist/css/suggestions.min.css" type="text/css" rel="stylesheet" />
+{#    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>#}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/suggestions-jquery@17.5.0/dist/js/jquery.suggestions.min.js"></script>
+    <script type="text/javascript">
+        $("#id_address").suggestions({
+            token: "cd3175f7b81a01e3ca532680c32d0011fe8336f6",
+            type: "ADDRESS",
+            count: 5,
+            /* Вызывается, когда пользователь выбирает одну из подсказок */
+            onSelect: function(suggestion) {
+                console.log(suggestion["unrestricted_value"]);
+            }
+        });
+    </script>
+
+
+{% endblock %}

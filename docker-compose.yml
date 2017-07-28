@@ -1,0 +1,48 @@
+web:
+  restart: always
+  build: ./web
+  expose:
+    - "8000"
+  links:
+    - postgres:postgres
+  volumes:
+    - webdata_app:/usr/src/app
+    - webdata_static:/usr/src/app/static
+  env_file: .env
+  environment:
+    DEBUG: 'true'
+  command: /usr/local/bin/gunicorn --env DJANGO_SETTINGS_MODULE=stroy_mat.settings --env DJANGO_CONFIGURATION=Prod stroy_mat.wsgi:application -w 2 -b :8000 --reload
+
+nginx:
+  restart: always
+  build: ./nginx/
+  ports:
+    - "80:80"
+  volumes:
+    - /www/static
+  volumes_from:
+    - web
+  links:
+    - web:web
+
+postgres:
+  restart: always
+  image: sameersbn/postgresql:9.6-2
+  ports:
+    - "5432:5432"
+  volumes:
+    - pgdata:/var/lib/postgresql/data/
+  environment:
+    - DEBUG=True
+
+    - POSTGRES_USER=has_app
+    - POSTGRES_PASSWORD=haspswd
+
+elastic:
+  restart: always
+  image: elasticsearch:2.4.4
+  ports:
+    - "9200:9200"
+    - "9300:9300"
+  volumes:
+    - esdata:/usr/share/elasticsearch/data
