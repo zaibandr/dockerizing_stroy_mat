@@ -44,8 +44,6 @@ class Base(Configuration):
         'bootstrap3',
         'django_filters',
         'configurations',
-        'django_socketio',
-        'chat',
     ]
 
     MIDDLEWARE = [
