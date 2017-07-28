@@ -36,6 +36,7 @@ postgres:
     - DEBUG=True
     - DB_USER=has_app
     - DB_PASS=haspswd
+    - DB_NAME=has_app_db
 
 elastic:
   restart: always
