@@ -3,6 +3,7 @@
 .idea
 venv
 env
+.env
 __pycache__
 .venv
 .cache

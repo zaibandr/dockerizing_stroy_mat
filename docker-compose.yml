@@ -34,9 +34,8 @@ postgres:
     - pgdata:/var/lib/postgresql/data/
   environment:
     - DEBUG=True
-
-    - POSTGRES_USER=has_app
-    - POSTGRES_PASSWORD=haspswd
+    - DB_USER=has_app
+    - DB_PASS=haspswd
 
 elastic:
   restart: always
