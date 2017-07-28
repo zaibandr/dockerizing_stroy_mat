@@ -44,7 +44,11 @@ class Base(Configuration):
         'bootstrap3',
         'django_filters',
         'configurations',
+        'django_private_chat'
     ]
+
+    CHAT_WS_SERVER_HOST = 'localhost'
+    CHAT_WS_SERVER_PORT = 5002
 
     MIDDLEWARE = [
         'django.middleware.security.SecurityMiddleware',
