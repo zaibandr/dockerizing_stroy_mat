@@ -1,0 +1,149 @@
+[
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u041f\u0435\u0441\u043e\u043a \u043a\u0430\u0440\u044c\u0435\u0440\u043d\u044b\u0439 / \u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439"
+        },
+        "pk": 1
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u041f\u0435\u0441\u043e\u043a \u0441\u0435\u044f\u043d\u044b\u0439"
+        },
+        "pk": 2
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u041f\u0435\u0441\u043e\u043a \u043c\u044b\u0442\u044b\u0439"
+        },
+        "pk": 3
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u041f\u0435\u0441\u043e\u043a \u0440\u0435\u0447\u043d\u043e\u0439"
+        },
+        "pk": 4
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0429\u0435\u0431\u0435\u043d\u044c \u0438\u0437\u0432\u0435\u0441\u0442\u043d\u044f\u043a\u043e\u0432\u044b\u0439 5-20"
+        },
+        "pk": 5
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0429\u0435\u0431\u0435\u043d\u044c \u0438\u0437\u0432\u0435\u0441\u0442\u043d\u044f\u043a\u043e\u0432\u044b\u0439 20-40"
+        },
+        "pk": 6
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0429\u0435\u0431\u0435\u043d\u044c \u0438\u0437\u0432\u0435\u0441\u0442\u043d\u044f\u043a\u043e\u0432\u044b\u0439 40-70"
+        },
+        "pk": 7
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0429\u0435\u0431\u0435\u043d\u044c \u0433\u0440\u0430\u0432\u0438\u0439\u043d\u044b\u0439 5-20"
+        },
+        "pk": 8
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0429\u0435\u0431\u0435\u043d\u044c \u0433\u0440\u0430\u0432\u0438\u0439\u043d\u044b\u0439 20-40"
+        },
+        "pk": 9
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0429\u0435\u0431\u0435\u043d\u044c \u0433\u0440\u0430\u0432\u0438\u0439\u043d\u044b\u0439 40-70"
+        },
+        "pk": 10
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0413\u0440\u0430\u043d\u0438\u0442\u043d\u044b\u0439 \u043e\u0442\u0441\u0435\u0432 0-5"
+        },
+        "pk": 11
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0413\u0440\u0430\u043d\u0438\u0442\u043d\u0430\u044f \u043a\u0440\u043e\u0448\u043a\u0430 2-5"
+        },
+        "pk": 12
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0429\u0435\u0431\u0435\u043d\u044c \u0433\u0440\u0430\u043d\u0438\u0442\u043d\u044b\u0439 3-10"
+        },
+        "pk": 13
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0429\u0435\u0431\u0435\u043d\u044c \u0433\u0440\u0430\u043d\u0438\u0442\u043d\u044b\u0439 5-20"
+        },
+        "pk": 14
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0429\u0435\u0431\u0435\u043d\u044c \u0433\u0440\u0430\u043d\u0438\u0442\u043d\u044b\u0439 20-40"
+        },
+        "pk": 15
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0429\u0435\u0431\u0435\u043d\u044c \u0433\u0440\u0430\u043d\u0438\u0442\u043d\u044b\u0439 40-70"
+        },
+        "pk": 16
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0413\u0440\u0430\u0432\u0438\u0439 \u043a\u0435\u0440\u0430\u043c\u0437\u0438\u0442\u043e\u0432\u044b\u0439 3-10"
+        },
+        "pk": 17
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0413\u0440\u0430\u0432\u0438\u0439 \u043a\u0435\u0440\u0430\u043c\u0437\u0438\u0442\u043e\u0432\u044b\u0439 10-20"
+        },
+        "pk": 18
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0413\u0440\u0430\u0432\u0438\u0439 \u043a\u0435\u0440\u0430\u043c\u0437\u0438\u0442\u043e\u0432\u044b\u0439 20-40"
+        },
+        "pk": 19
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0422\u043e\u0440\u0444"
+        },
+        "pk": 20
+    },
+    {
+        "model": "has_app.product",
+        "fields": {
+            "name": "\u0420\u0430\u0441\u0442\u0438\u0442\u0435\u043b\u044c\u043d\u044b\u0439 \u0433\u0440\u0443\u043d\u0442"
+        },
+        "pk": 21
+    }
+]
