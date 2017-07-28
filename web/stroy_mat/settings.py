@@ -44,11 +44,8 @@ class Base(Configuration):
         'bootstrap3',
         'django_filters',
         'configurations',
-        'django_private_chat'
     ]
 
-    CHAT_WS_SERVER_HOST = 'localhost'
-    CHAT_WS_SERVER_PORT = 5002
 
     MIDDLEWARE = [
         'django.middleware.security.SecurityMiddleware',
@@ -136,18 +133,18 @@ class Dev(Base):
 class Prod(Base):
     DEBUG = True
 
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.environ['DB_NAME'],
-            'USER': os.environ['DB_USER'],
-            'PASSWORD': os.environ['DB_PASS'],
-            'HOST': os.environ['DB_SERVICE'],
-            'PORT': os.environ['DB_PORT']
-        }
-    }
-
-    SECRET_KEY = os.environ['SECRET_KEY']
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #         'NAME': os.environ['DB_NAME'],
+    #         'USER': os.environ['DB_USER'],
+    #         'PASSWORD': os.environ['DB_PASS'],
+    #         'HOST': os.environ['DB_SERVICE'],
+    #         'PORT': os.environ['DB_PORT']
+    #     }
+    # }
+    #
+    # SECRET_KEY = os.environ['SECRET_KEY']
 
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
