@@ -4,7 +4,7 @@ web:
   expose:
     - "8000"
   links:
-    - postgres:postgres
+    - postgres:sameersbn/postgresql:9.6-2
   volumes:
     - webdata_app:/usr/src/app
     - webdata_static:/usr/src/app/static
