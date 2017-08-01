@@ -2,6 +2,7 @@ Django
 gunicorn
 psycopg2
 django-haystack
+elasticsearch
 django-configurations
 django-tables2
 django-bootstrap3
