@@ -45,7 +45,7 @@ class Base(Configuration):
         'configurations',
 
         'haystack',
-        'django.contrib.gis'
+        # 'django.contrib.gis'
     ]
 
     MIDDLEWARE = [
