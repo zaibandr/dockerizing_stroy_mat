@@ -17,3 +17,4 @@ class OrdersTable(tables.Table):
 
         # add class="paleblue" to <table> tag
         fields = ('id', 'product', 'volume', 'status', 'phone_number', 'address', 'time_created')
+

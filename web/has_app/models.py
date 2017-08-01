@@ -14,6 +14,18 @@ class Product(models.Model):
         return self.name
 
 
+class CartItem(models.Model):
+    product = models.ForeignKey(Product)
+    quantity = models.IntegerField()
+
+    def __str__(self):
+        return '{}\t({})'.format(self.product.name, self.quantity)
+
+
+class Cart(models.Model):
+    items = models.ManyToManyField(CartItem)
+
+
 class Order(models.Model):
     status_choice = (
         ('CRTD', 'Создан'),
@@ -22,22 +34,23 @@ class Order(models.Model):
     )
 
     receipt_choice = (
+        (2, 'Круглосуточно'),
         (0, 'День'),
         (1, 'Ночь'),
-        (2, 'Круглосуточно'),
     )
 
     tonar_choice = (
+        (1, 'Дa'),
         (0, 'Нет'),
-        (1, 'Дa')
     )
 
     payment_choice = (
+        (0, 'Безналичный'),
         (1, 'Наличный'),
-        (0, 'Безналичный')
     )
 
     product = models.ForeignKey(Product, default=1)
+
     # author = models.ForeignKey(User, default=User.objects.get(username='panagoa').pk)
     manager = models.ForeignKey(User)
 

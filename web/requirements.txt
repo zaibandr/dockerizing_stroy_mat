@@ -1,6 +1,7 @@
 Django
 gunicorn
 psycopg2
+django-haystack
 django-configurations
 django-tables2
 django-bootstrap3

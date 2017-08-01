@@ -7,28 +7,43 @@
     <div id="order_info" class="container">
         <h2>Заказ номер: {{ order.pk }} </h2>
 
-
+    <hr>
+    <h3>Детали заказа</h3>
     <p>Наименование: {{ order.product.name }}</p>
+    <p>Объем: {{ order.volume }}</p>
     <p>Адрес: {{ order.address }}</p>
-    <p>{{ order.status }}</p>
+    <p>Тонары: {{ order.get_tonar_display }}</p>
+    <p>Прием: {{ order.get_time_of_receipt_display }}</p>
+    <p>Оплата: {{ order.get_payment_display }}</p>
+
+    <p>Стоимость с доставкой: {{ order.cost }} р.</p>
+
+
+
+    <hr>
+    <h3>Информация заказа</h3>
+    <p>Описание: {{ order.description }}</p>
+    <hr>
+    {% if order.status == 'CRTD' or order.status == 'Создан' %}
+        <p>Заказ ожидает обработки</p>
+        <p>Прошло времени: {{ order.time_created|timesince:now }}</p>
+    {% elif order.status == 'PRCSD' or order.status == 'В обработке' %}
+        <p>Заказ обрабатывается</p>
+        <p>Прошло времени: {{ order.time_created|timesince:now }}</p>
+    {% else %}
+        <p>Заказ обработан</p>
+        <p>Обработан за: {{ order.time_created|timesince:order.time_completed }}</p>
+    {% endif %}
 
     <p>Менеджер: {{ order.manager }}</p>
-    <p>Стоимость с доставкой: {{ order.cost }} р.</p>
+    <p>{{ order.status }}</p>
+
+
+    <hr>
+
     <p>Время создания: {{ order.time_created }}</p>
     <p>Время обновления: {{ order.time_updated }}</p>
     <p>{{ order.time_completed }}</p>
-
-        {% if order.status == 'CRTD' or order.status == 'Создан' %}
-            <p>Заказ ожидает обработки</p>
-            <p>Прошло времени: {{ order.time_created|timesince:now }}</p>
-        {% elif order.status == 'PRCSD' or order.status == 'В обработке' %}
-            <p>Заказ обрабатывается</p>
-            <p>Прошло времени: {{ order.time_created|timesince:now }}</p>
-        {% else %}
-            <p>Заказ обработан</p>
-            <p>Обработан за: {{ order.time_created|timesince:order.time_completed }}</p>
-        {% endif %}
-
 
     {% buttons %}
         <a href="{% url 'orders' %}" class="btn btn-default" role="button">Все заказы</a>

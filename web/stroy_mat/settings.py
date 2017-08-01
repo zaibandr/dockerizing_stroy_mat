@@ -6,7 +6,6 @@ class Base(Configuration):
     # Django settings for test_project project.
 
     DEBUG = values.BooleanValue(True, environ=True)
-    TEMPLATE_DEBUG = DEBUG
 
     ADMINS = (
         ('panagoa', 'panagoa@ya.ru'),
@@ -44,8 +43,10 @@ class Base(Configuration):
         'bootstrap3',
         'django_filters',
         'configurations',
-    ]
 
+        'haystack',
+        'django.contrib.gis'
+    ]
 
     MIDDLEWARE = [
         'django.middleware.security.SecurityMiddleware',
@@ -133,18 +134,28 @@ class Dev(Base):
 class Prod(Base):
     DEBUG = True
 
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #         'NAME': os.environ['DB_NAME'],
-    #         'USER': os.environ['DB_USER'],
-    #         'PASSWORD': os.environ['DB_PASS'],
-    #         'HOST': os.environ['DB_SERVICE'],
-    #         'PORT': os.environ['DB_PORT']
-    #     }
-    # }
-    #
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ['DB_NAME'],
+            'USER': os.environ['DB_USER'],
+            'PASSWORD': os.environ['DB_PASS'],
+            'HOST': os.environ['DB_SERVICE'],
+            'PORT': os.environ['DB_PORT']
+        }
+    }
+
     # SECRET_KEY = os.environ['SECRET_KEY']
+
+    HAYSTACK_CONNECTIONS = {
+        'default': {
+            'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+            'URL': '{}:{}'.format('194.67.215.206', '9200'),
+            'TIMEOUT': 60 * 5,
+            'INDEX_NAME': 'haystack',
+            'INCLUDE_SPELLING': True,
+        },
+    }
 
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
