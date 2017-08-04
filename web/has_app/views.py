@@ -21,6 +21,7 @@ import datetime
 from geopy.geocoders import Yandex
 from geopy.distance import vincenty
 from shapely.geometry import Polygon, Point
+import json
 
 
 def home_page(request):
@@ -98,8 +99,9 @@ class OrderDetailView(DetailView):
         point = Point((self.object.longitude, self.object.latitude))
         for zone in Zone.objects.all():
             print(zone, zone.polygon)
+
             polygon = Polygon(zone.polygon)
-            if polygon.contains(point):
+            if polygon.contains(json.loads(point)):
                 point_in_zone.append(zone)
 
         context['point_in_zone'] = point_in_zone
