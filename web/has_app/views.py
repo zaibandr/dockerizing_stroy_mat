@@ -38,6 +38,16 @@ def new_order_form(request):
 
             new_order.manager = User.objects.get(username=request.user)
 
+            from geopy.geocoders import Yandex
+
+            geo_locator = Yandex()
+            location = geo_locator.geocode(new_order.address, timeout=10)
+            new_order.longitude = location.longitude
+            new_order.latitude = location.latitude
+            new_order.coordinate = location.point
+
+            new_order.save()
+
             last_order_url = Order.objects.last().get_absolute_url()
             return HttpResponseRedirect(last_order_url)
 
