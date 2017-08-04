@@ -1,5 +1,6 @@
 FROM python:3.5
 
+ARG DEBIAN_FRONTEND=noninteractive
 RUN mkdir -p /usr/src/app
 RUN apt-get update && apt-get install -y libgeos-dev
 WORKDIR /usr/src/app
