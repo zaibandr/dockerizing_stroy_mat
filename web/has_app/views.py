@@ -18,6 +18,10 @@ from .forms import NewOrderForm, UpdateOrderForm, EditOrderForm
 
 import datetime
 
+from geopy.geocoders import Yandex
+from geopy.distance import vincenty
+from shapely.geometry import Polygon, Point
+
 
 def home_page(request):
     redirect('/orders/')
@@ -37,8 +41,6 @@ def new_order_form(request):
             new_order = form.save(commit=False)
 
             new_order.manager = User.objects.get(username=request.user)
-
-            from geopy.geocoders import Yandex
 
             geo_locator = Yandex()
             location = geo_locator.geocode(new_order.address, timeout=10)
@@ -82,20 +84,25 @@ class OrderDetailView(DetailView):
         context = super(OrderDetailView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
 
-        # distance context
-        from geopy.geocoders import Yandex
-        from geopy.distance import vincenty
+        # # distance context
+        # geo_locator = Yandex()
+        # center = geo_locator.geocode('Москва', timeout=10)
+        #
+        # loc_coord = (self.object.latitude, self.object.longitude)
+        # center_coord = (center.latitude, center.longitude)
+        #
+        # context['distance'] = '{} km'.format(vincenty(loc_coord, center_coord).km)
+        # #########################################################################
 
-        geo_locator = Yandex()
-        center = geo_locator.geocode('Москва', timeout=10)
+        point_in_zone = []
+        point = Point((self.object.longitude, self.object.latitude))
+        for zone in Zone.objects.all():
+            print(zone, zone.polygon)
+            polygon = Polygon(zone.polygon)
+            if polygon.contains(point):
+                point_in_zone.append(zone)
 
-        loc_coord = (self.object.latitude, self.object.longitude)
-        center_coord = (center.latitude, center.longitude)
-
-        context['distance'] = '{} km'.format(vincenty(loc_coord, center_coord).km)
-        #########################################################################
-
-        context['zones'] = Zone.objects.all()
+        context['point_in_zone'] = point_in_zone
 
         return context
 
