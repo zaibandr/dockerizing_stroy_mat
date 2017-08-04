@@ -1,7 +1,7 @@
 FROM python:3.5
 
 RUN mkdir -p /usr/src/app
-RUN apt install -y libgeos-dev
+RUN RUN apt-get update && apt-get install -y libgeos-dev
 WORKDIR /usr/src/app
 
 ONBUILD COPY requirements.txt /usr/src/app/
