@@ -4,3 +4,5 @@ docker-compose down
 docker volume rm webdata_app
 docker-compose build
 docker-compose up -d
+docker exec -it dockerizingstroymat_web_1 bash
+apt update && apt install -y libgeos-dev
