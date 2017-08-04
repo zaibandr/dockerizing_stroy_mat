@@ -100,8 +100,8 @@ class OrderDetailView(DetailView):
         for zone in Zone.objects.all():
             print(zone, zone.polygon)
 
-            polygon = Polygon(zone.polygon)
-            if polygon.contains(json.loads(point)):
+            polygon = Polygon(json.loads(zone.polygon))
+            if polygon.contains(point):
                 point_in_zone.append(zone)
 
         context['point_in_zone'] = point_in_zone
