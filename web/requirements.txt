@@ -8,3 +8,6 @@ django-tables2
 django-bootstrap3
 django-filter
 dj_email_url
+
+shapely
+geopy

@@ -4,53 +4,84 @@
 {% load bootstrap3 %}
 {% block content %}
 
+
     <div id="order_info" class="container">
         <h2>Заказ номер: {{ order.pk }} </h2>
 
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#panel1">Детали</a></li>
+        <li><a data-toggle="tab" href="#panel2">Описание</a></li>
+        <li class="dropdown">
+        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+          Другие панели
+          <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a data-toggle="tab" href="#panel3">Мета</a></li>
+            <li><a data-toggle="tab" href="#panel4">GIS</a></li>
+            <li><a data-toggle="tab" href="#panel5">Поставщики</a></li>
+        </ul>
+        </li>
+    </ul>
+
+    <div class="tab-content" style="height: 300px">
+        <div id="panel1" class="tab-pane fade in active">
+            <h3>Детали заказа</h3>
+            <p>Наименование: {{ order.product.name }}</p>
+            <p>Объем: {{ order.volume }}</p>
+            <p>Адрес: {{ order.address }}</p>
+            <p>Тонары: {{ order.get_tonar_display }}</p>
+            <p>Прием: {{ order.get_time_of_receipt_display }}</p>
+            <p>Оплата: {{ order.get_payment_display }}</p>
+
+            <p>Стоимость с доставкой: {{ order.cost }} р.</p>
+        </div>
+        <div id="panel2" class="tab-pane fade">
+            <h3>Описание заказа</h3>
+            <p>Описание: {{ order.description }}</p>
+        </div>
+        <div id="panel3" class="tab-pane fade">
+            <h3>Мета</h3>
+            {% if order.status == 'CRTD' or order.status == 'Создан' %}
+                <p>Заказ ожидает обработки</p>
+                <p>Прошло времени: {{ order.time_created|timesince:now }}</p>
+            {% elif order.status == 'PRCSD' or order.status == 'В обработке' %}
+                <p>Заказ обрабатывается</p>
+                <p>Прошло времени: {{ order.time_created|timesince:now }}</p>
+            {% else %}
+                <p>Заказ обработан</p>
+                <p>Обработан за: {{ order.time_created|timesince:order.time_completed }}</p>
+            {% endif %}
+
+            <p>Менеджер: {{ order.manager }}</p>
+            <p>{{ order.status }}</p>
+
+            <p>Время создания: {{ order.time_created }}</p>
+            <p>Время обновления: {{ order.time_updated }}</p>
+            <p>{{ order.time_completed }}</p>
+            <p>{{ now }}</p>
+        </div>
+        <div id="panel4" class="tab-pane fade">
+            <h3>GIS</h3>
+            <p>Координаты: {{ order.longitude}}, {{ order.latitude }}</p>
+            <p>Координаты: {{ order.coordinate}}</p>
+            <p>{{ distance }}</p>
+        </div>
+        <div id="panel5" class="tab-pane fade">
+            <h3>Список поставщиков</h3>
+            {% for z in zones %}
+                <p>{{ z.polygon }}</p>
+            {% endfor %}
+        </div>
+    </div>
+
     <hr>
-    <h3>Детали заказа</h3>
-    <p>Наименование: {{ order.product.name }}</p>
-    <p>Объем: {{ order.volume }}</p>
-    <p>Адрес: {{ order.address }}</p>
-    <p>Тонары: {{ order.get_tonar_display }}</p>
-    <p>Прием: {{ order.get_time_of_receipt_display }}</p>
-    <p>Оплата: {{ order.get_payment_display }}</p>
-
-    <p>Стоимость с доставкой: {{ order.cost }} р.</p>
-
-
-
-    <hr>
-    <h3>Информация заказа</h3>
-    <p>Описание: {{ order.description }}</p>
-    <hr>
-    {% if order.status == 'CRTD' or order.status == 'Создан' %}
-        <p>Заказ ожидает обработки</p>
-        <p>Прошло времени: {{ order.time_created|timesince:now }}</p>
-    {% elif order.status == 'PRCSD' or order.status == 'В обработке' %}
-        <p>Заказ обрабатывается</p>
-        <p>Прошло времени: {{ order.time_created|timesince:now }}</p>
-    {% else %}
-        <p>Заказ обработан</p>
-        <p>Обработан за: {{ order.time_created|timesince:order.time_completed }}</p>
-    {% endif %}
-
-    <p>Менеджер: {{ order.manager }}</p>
-    <p>{{ order.status }}</p>
-
-
-    <hr>
-
-    <p>Время создания: {{ order.time_created }}</p>
-    <p>Время обновления: {{ order.time_updated }}</p>
-    <p>{{ order.time_completed }}</p>
-
     {% buttons %}
         <a href="{% url 'orders' %}" class="btn btn-default" role="button">Все заказы</a>
         <a href="edit/" class="btn btn-primary" role="button">Изменить</a>
         <a href="update/" class="btn btn-info" role="button">Обновить</a>
     {% endbuttons %}
-
+    <hr>
     </div>
 
 {#    <script data-require="jquery@2.2.4" data-semver="2.2.4" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>#}
@@ -62,7 +93,7 @@
 {#    </script>#}
 
 
-    <div id="ya_map" class="container"></div>
+    <div id="ya_map" class="container" style="height: 480px; padding-bottom: 40px; padding-top: 40px "></div>
 
 
 
@@ -72,8 +103,6 @@
 
         // Дождёмся загрузки API и готовности DOM.
         ymaps.ready(init);
-
-
 
         function init () {
             // Создание экземпляра карты и его привязка к контейнеру с
@@ -99,16 +128,7 @@
                     // обработка ошибки
                 }
             );
-
-            //document.getElementById('destroyButton').onclick = function () {
-            //    // Для уничтожения используется метод destroy.
-            //    myMap.destroy();
-            //};
-
         };
-
-
     </script>
-
 
 {% endblock %}

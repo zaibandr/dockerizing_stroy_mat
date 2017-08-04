@@ -45,7 +45,7 @@ class Base(Configuration):
         'configurations',
 
         'haystack',
-        # 'django.contrib.gis'
+        #'django.contrib.gis'
     ]
 
     MIDDLEWARE = [
@@ -144,6 +144,17 @@ class Prod(Base):
             'PORT': os.environ['DB_PORT']
         }
     }
+
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.contrib.gis.db.backends.postgis',
+    #         'NAME': os.environ['DB_NAME'],
+    #         'USER': os.environ['DB_USER'],
+    #         'PASSWORD': os.environ['DB_PASS'],
+    #         'HOST': os.environ['DB_SERVICE'],
+    #         'PORT': '5445'
+    #     }
+    # }
 
     # SECRET_KEY = os.environ['SECRET_KEY']
 

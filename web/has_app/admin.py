@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Order, Product, CartItem, Cart
+from .models import Order, Product, Provider
 
 # Register your models here.
 
@@ -16,15 +16,9 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
-class CartAdmin(admin.ModelAdmin):
+class ProviderAdmin(admin.ModelAdmin):
     pass
-
-
-class CartItemAdmin(admin.ModelAdmin):
-    pass
-
 
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Product, ProductAdmin)
-admin.site.register(Cart, CartAdmin)
-admin.site.register(CartItem, CartItemAdmin)
+admin.site.register(Provider, ProviderAdmin)

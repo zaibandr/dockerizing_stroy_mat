@@ -49,8 +49,13 @@ class NewOrderForm(ModelForm):
 
     class Meta:
         model = Order
-        fields = ['product', 'manager', 'address', 'name', 'phone_number', 'volume', 'description', 'status', 'tonar', 'time_of_receipt', 'payment']
-        exclude = ['manager', 'status']
+        fields = ['product', 'manager', 'address', 'name',
+                  'phone_number', 'volume', 'description',
+                  'status', 'tonar', 'time_of_receipt', 'payment',
+                  'longitude', 'latitude', 'coordinate'
+                  ]
+
+        exclude = ['manager', 'status', 'longitude', 'latitude', 'coordinate']
         widgets = {
             'description': Textarea(attrs={'cols': 40, 'rows': 4}),
             'product': MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'})

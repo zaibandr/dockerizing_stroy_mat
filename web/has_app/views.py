@@ -13,7 +13,7 @@ from django_tables2 import RequestConfig
 from .tables import OrdersTable
 
 from django.contrib.auth.models import User
-from .models import Order
+from .models import Order, Provider, Zone
 from .forms import NewOrderForm, UpdateOrderForm, EditOrderForm
 
 import datetime
@@ -37,7 +37,6 @@ def new_order_form(request):
             new_order = form.save(commit=False)
 
             new_order.manager = User.objects.get(username=request.user)
-            new_order.save()
 
             last_order_url = Order.objects.last().get_absolute_url()
             return HttpResponseRedirect(last_order_url)
@@ -72,6 +71,22 @@ class OrderDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(OrderDetailView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
+
+        # distance context
+        from geopy.geocoders import Yandex
+        from geopy.distance import vincenty
+
+        geo_locator = Yandex()
+        center = geo_locator.geocode('Москва', timeout=10)
+
+        loc_coord = (self.object.latitude, self.object.longitude)
+        center_coord = (center.latitude, center.longitude)
+
+        context['distance'] = '{} km'.format(vincenty(loc_coord, center_coord).km)
+        #########################################################################
+
+        context['zones'] = Zone.objects.all()
+
         return context
 
 
