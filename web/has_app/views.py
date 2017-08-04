@@ -103,6 +103,7 @@ class OrderDetailView(DetailView):
                 point_in_zone.append(zone)
 
         context['point_in_zone'] = point_in_zone
+        print(point_in_zone)
 
         return context
 
