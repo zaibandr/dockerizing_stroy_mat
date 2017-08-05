@@ -98,14 +98,45 @@ class OrderDetailView(DetailView):
         point_in_zone = []
         point = Point((self.object.longitude, self.object.latitude))
         for zone in Zone.objects.all():
-            print(zone, zone.polygon)
+            # print(zone, zone.polygon)
 
             polygon = Polygon(json.loads(zone.polygon))
             if polygon.contains(point):
                 point_in_zone.append(zone)
 
         context['point_in_zone'] = point_in_zone
-        print(point_in_zone)
+        # print(point_in_zone)
+
+        features = []
+        for zone in point_in_zone:
+            feature = {
+                'properties': {
+                    'fill': '#00FF00',
+                    'stroke-opacity': 0.9,
+                    'stroke-width': '5',
+                    'fill-opacity': 0.6,
+                    'stroke': '#ed4543',
+                    'description': zone.name
+                },
+                'id': len(features),
+                'geometry': {
+                    'coordinates': [
+                        zone.polygon
+                    ],
+                    'type': 'Polygon'
+                },
+                'type': 'Feature'
+            }
+            features.append(feature)
+
+        # print(features)
+
+        geo_json = {
+            'type': 'FeatureCollection',
+            'features': features
+        }
+
+        context['geo_json'] = geo_json
 
         return context
 

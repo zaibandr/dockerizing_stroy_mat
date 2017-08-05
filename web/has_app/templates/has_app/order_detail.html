@@ -69,9 +69,11 @@
         </div>
         <div id="panel5" class="tab-pane fade">
             <h3>Список поставщиков</h3>
+            <h4>Зона:</h4>
             {% for z in point_in_zone %}
                 <p>{{ z }}</p>
             {% endfor %}
+            {{ geo_json }}
         </div>
     </div>
 
@@ -117,11 +119,13 @@
                 searchControlProvider: 'yandex#search'
             });
 
+
             var myGeocoder = ymaps.geocode("{{ order.address }}", {iconCaption: "{{ order.address }}", preset: 'islands#greenDotIconWithCaption'});
 {#            myGeocoder.properties.iconCaption = "{{ order.address }}";#}
             myGeocoder.then(
                 function (res) {
                     myMap.geoObjects.add(res.geoObjects);
+                    myMap.geoObjects.add({{ geo_json }});
 
                 },
                 function (err) {
