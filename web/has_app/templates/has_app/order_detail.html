@@ -10,18 +10,19 @@
 
     <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#panel1">Детали</a></li>
-        <li><a data-toggle="tab" href="#panel2">Описание</a></li>
-        <li class="dropdown">
-        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-          Другие панели
-          <b class="caret"></b>
-        </a>
-        <ul class="dropdown-menu">
-            <li><a data-toggle="tab" href="#panel3">Мета</a></li>
-            <li><a data-toggle="tab" href="#panel4">GIS</a></li>
-            <li><a data-toggle="tab" href="#panel5">Поставщики</a></li>
-        </ul>
-        </li>
+        <li><a data-toggle="tab" href="#panel2">Мета</a></li>
+        <li><a data-toggle="tab" href="#panel3">GIS</a></li>
+        <li><a data-toggle="tab" href="#panel4">Поставщики</a></li>
+
+{#        <li class="dropdown">#}
+{#        <a data-toggle="dropdown" class="dropdown-toggle" href="#">#}
+{#          Другие панели#}
+{#          <b class="caret"></b>#}
+{#        </a>#}
+{#        <ul class="dropdown-menu">#}
+{#            <li><a data-toggle="tab" href="#panel5">qwerty</a></li>#}
+{#        </ul>#}
+{#        </li>#}
     </ul>
 
     <div class="tab-content" style="height: 300px">
@@ -33,14 +34,11 @@
             <p>Тонары: {{ order.get_tonar_display }}</p>
             <p>Прием: {{ order.get_time_of_receipt_display }}</p>
             <p>Оплата: {{ order.get_payment_display }}</p>
+            <p>Описание: {{ order.description }}</p>
 
             <p>Стоимость с доставкой: {{ order.cost }} р.</p>
         </div>
         <div id="panel2" class="tab-pane fade">
-            <h3>Описание заказа</h3>
-            <p>Описание: {{ order.description }}</p>
-        </div>
-        <div id="panel3" class="tab-pane fade">
             <h3>Мета</h3>
             {% if order.status == 'CRTD' or order.status == 'Создан' %}
                 <p>Заказ ожидает обработки</p>
@@ -61,25 +59,28 @@
             <p>{{ order.time_completed }}</p>
             <p>{{ now }}</p>
         </div>
-        <div id="panel4" class="tab-pane fade">
+        <div id="panel3" class="tab-pane fade">
             <h3>GIS</h3>
             <p>Координаты: {{ order.longitude}}, {{ order.latitude }}</p>
             <p>Координаты: {{ order.coordinate}}</p>
             <p>{{ distance }}</p>
         </div>
-        <div id="panel5" class="tab-pane fade">
+        <div id="panel4" class="tab-pane fade">
             <h3>Список поставщиков</h3>
+            {% for p in providers %}
+                <p>{{ p.name }}     {{ p.phone_number }}</p>
+            {% endfor %}
+
             <h4>Зона:</h4>
             {% for z in point_in_zone %}
                 <p>{{ z }}</p>
             {% endfor %}
-            {{ geo_json }}
         </div>
     </div>
 
     <hr>
     {% buttons %}
-        <a href="{% url 'orders' %}" class="btn btn-default" role="button">Все заказы</a>
+        <a href="{% url 'orders' %}" class="btn btn-success" role="button">Все заказы</a>
         <a href="edit/" class="btn btn-primary" role="button">Изменить</a>
         <a href="update/" class="btn btn-info" role="button">Обновить</a>
     {% endbuttons %}
@@ -119,13 +120,11 @@
                 searchControlProvider: 'yandex#search'
             });
 
-
             var myGeocoder = ymaps.geocode("{{ order.address }}", {iconCaption: "{{ order.address }}", preset: 'islands#greenDotIconWithCaption'});
 {#            myGeocoder.properties.iconCaption = "{{ order.address }}";#}
             myGeocoder.then(
                 function (res) {
                     myMap.geoObjects.add(res.geoObjects);
-                    myMap.geoObjects.add({{ geo_json }});
 
                 },
                 function (err) {
@@ -134,5 +133,26 @@
             );
         };
     </script>
+
+{#    <script type="text/javascript">#}
+{#        ymaps.ready(function () {#}
+{##}
+{#            var map = new ymaps.Map('ya_map', {#}
+{#                    center: [55.76, 37.64], // Москва#}
+{#                    zoom: 8,#}
+{#                    searchControlProvider: 'yandex#search'#}
+{#                }),#}
+{#                objectManager = new ymaps.ObjectManager();#}
+{##}
+{##}
+{##}
+{#                // Добавляем описание объектов в формате JSON в менеджер объектов.#}
+{#                objectManager.add({{ geo_json|safe }});#}
+{#                // Добавляем объекты на карту.#}
+{#                map.geoObjects.add(objectManager);#}
+{##}
+{#        });#}
+{##}
+{#    </script>#}
 
 {% endblock %}

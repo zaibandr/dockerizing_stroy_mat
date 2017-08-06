@@ -105,38 +105,46 @@ class OrderDetailView(DetailView):
                 point_in_zone.append(zone)
 
         context['point_in_zone'] = point_in_zone
+
+        point_within_provider = []
+        for provider in Provider.objects.all():
+            polygon = Polygon(json.loads(provider.geo_json))
+            if polygon.contains(point):
+                point_within_provider.append(provider)
+
+        context['providers'] = point_within_provider
         # print(point_in_zone)
 
-        features = []
-        for zone in point_in_zone:
-            feature = {
-                'properties': {
-                    'fill': '#00FF00',
-                    'stroke-opacity': 0.9,
-                    'stroke-width': '5',
-                    'fill-opacity': 0.6,
-                    'stroke': '#ed4543',
-                    'description': zone.name
-                },
-                'id': len(features),
-                'geometry': {
-                    'coordinates': [
-                        zone.polygon
-                    ],
-                    'type': 'Polygon'
-                },
-                'type': 'Feature'
-            }
-            features.append(feature)
-
-        # print(features)
-
-        geo_json = {
-            'type': 'FeatureCollection',
-            'features': features
-        }
-
-        context['geo_json'] = geo_json
+        # features = []
+        # for zone in point_in_zone:
+        #     feature = {
+        #         'properties': {
+        #             'fill': '#00FF00',
+        #             'stroke-opacity': 0.9,
+        #             'stroke-width': '5',
+        #             'fill-opacity': 0.6,
+        #             'stroke': '#ed4543',
+        #             'description': zone.name
+        #         },
+        #         'id': len(features),
+        #         'geometry': {
+        #             'coordinates': [
+        #                 zone.polygon
+        #             ],
+        #             'type': 'Polygon'
+        #         },
+        #         'type': 'Feature'
+        #     }
+        #     features.append(feature)
+        #
+        # # print(features)
+        #
+        # geo_json = {
+        #     'type': 'FeatureCollection',
+        #     'features': features
+        # }
+        #
+        # context['geo_json'] = json.dumps(geo_json)
 
         return context
 

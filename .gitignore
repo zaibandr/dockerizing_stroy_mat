@@ -8,8 +8,3 @@ __pycache__
 .venv
 .cache
 web/db.sqlite3
-web/has_app/migrations/0001_initial.py
-web/has_app/migrations/0002_auto_20170728_1953.py
-web/has_app/migrations/0003_auto_20170728_2008.py
-web/has_app/migrations/0004_auto_20170729_0151.py
-web/has_app/migrations/0005_auto_20170731_1416.py

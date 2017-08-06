@@ -4,7 +4,6 @@ with open('geo_json.json', 'r', encoding='utf-8') as f:
     data = json.load(f)
     fixtures = []
 
-    d = {}
     for feature in data['features']:
         print(feature)
         d = {

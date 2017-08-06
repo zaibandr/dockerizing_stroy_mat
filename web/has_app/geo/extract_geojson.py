@@ -38,6 +38,7 @@ for a, b in [('120', '80'), ('80', '50'), ('50', '20'), ('20', '0')]:
         hex_color = [hex(random.randrange(0, 255))[2:] for _ in range(3)]
         color = '#{}'.format(''.join(hex_color))
 
+        print(poly)
         feature = {
             'properties': {
                 'fill': color,
