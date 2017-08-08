@@ -1,6 +1,6 @@
 import django_tables2 as tables
 from django.utils.html import format_html
-from .models import Order
+from .models import Order, Provider
 
 
 class ProductColumn(tables.Column):
@@ -18,3 +18,19 @@ class OrdersTable(tables.Table):
         # add class="paleblue" to <table> tag
         fields = ('id', 'product', 'volume', 'status', 'phone_number', 'address', 'time_created')
 
+
+class ProviderTable(tables.Table):
+    name = tables.Column(verbose_name='Поставщик')
+
+    class Meta:
+        model = Provider
+        fields = ('phone_number', 'contact_name', 'name')
+
+
+class AvailableProviderTable(tables.Table):
+    phone_number_checkbox = tables.CheckBoxColumn(accessor='pk')
+    name = tables.Column(verbose_name='Поставщик')
+
+    class Meta:
+        model = Provider
+        fields = ('phone_number_checkbox', 'phone_number', 'contact_name', 'name')

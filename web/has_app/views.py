@@ -1,6 +1,6 @@
 # Create your views here.
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
 from django_tables2 import RequestConfig
-from .tables import OrdersTable
+from .tables import OrdersTable, AvailableProviderTable, ProviderTable
 
 from django.contrib.auth.models import User
 from .models import Order, Provider, Zone
@@ -23,9 +23,46 @@ from geopy.distance import vincenty
 from shapely.geometry import Polygon, Point
 import json
 
+import requests
+
 
 def home_page(request):
     redirect('/orders/')
+
+
+def provider_notify(request):
+    if request.method == 'POST':
+        pks = request.POST.getlist('phone_number_checkbox')
+
+        params = {
+            'user': 'zaibandr@yandex.ru',
+            'password': 'UHwOb0Bpd8hr3TE0ZauTBWneG59c',
+            'to': '79057508337',
+            'text': 'qwerty',
+            'from': 'biznes',
+            'answer': 'json'
+        }
+
+        url = 'https://gate.smsaero.ru/testsend/'
+
+        order_id = request.POST.get('order_id')
+        context = {
+            'providers': ProviderTable(Provider.objects.filter(pk__in=pks)),
+            'order_id': order_id
+        }
+
+        order = Order.objects.get(pk=order_id)
+        if order.status == 'CRTD':
+            order.status = 'PRCSG'
+            order.save()
+            resp = requests.get(url, params)
+            context['resp'] = resp.json()
+        else:
+            context['prev_sent'] = True
+
+        return render(request, 'has_app/providers.html', context)
+    else:
+        return HttpResponseForbidden
 
 
 def new_order_form(request):
@@ -110,9 +147,11 @@ class OrderDetailView(DetailView):
         for provider in Provider.objects.all():
             polygon = Polygon(json.loads(provider.geo_json))
             if polygon.contains(point):
-                point_within_provider.append(provider)
+                point_within_provider.append(provider.pk)
 
-        context['providers'] = point_within_provider
+        context['providers'] = AvailableProviderTable(Provider.objects.filter(pk__in=point_within_provider))
+
+
         # print(point_in_zone)
 
         # features = []

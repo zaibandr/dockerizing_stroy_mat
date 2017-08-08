@@ -25,18 +25,33 @@
 {#        </li>#}
     </ul>
 
-    <div class="tab-content" style="height: 300px">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
+    <div class="tab-content" style="height: 400px">
         <div id="panel1" class="tab-pane fade in active">
             <h3>Детали заказа</h3>
-            <p>Наименование: {{ order.product.name }}</p>
-            <p>Объем: {{ order.volume }}</p>
-            <p>Адрес: {{ order.address }}</p>
-            <p>Тонары: {{ order.get_tonar_display }}</p>
-            <p>Прием: {{ order.get_time_of_receipt_display }}</p>
-            <p>Оплата: {{ order.get_payment_display }}</p>
-            <p>Описание: {{ order.description }}</p>
+            <div id="order-info">
+                <p>Заказ номер: {{ order.pk }} </p>
+                <p>Наименование: {{ order.product.name }}</p>
+                <p>Объем: {{ order.volume }}</p>
+                <p>Адрес: {{ order.address }}</p>
+                <p>Тонары: {{ order.get_tonar_display }}</p>
+                <p>Прием: {{ order.get_time_of_receipt_display }}</p>
+                <p>Оплата: {{ order.get_payment_display }}</p>
+                <p>Описание: {{ order.description }}</p>
 
-            <p>Стоимость с доставкой: {{ order.cost }} р.</p>
+                <p>Стоимость с доставкой: {{ order.cost }} р.</p>
+            </div>
+
+            <button type="button" class="btn btn-success" id="copy-button" aria-label="Left Align" data-clipboard-target="#order-info">
+                <span class="glyphicon glyphicon-copy" aria-hidden="true"></span>
+            </button>
+
+            <script type="text/javascript">
+                (function(){
+                    new Clipboard('#copy-button');
+                })();
+            </script>
+
         </div>
         <div id="panel2" class="tab-pane fade">
             <h3>Мета</h3>
@@ -67,9 +82,18 @@
         </div>
         <div id="panel4" class="tab-pane fade">
             <h3>Список поставщиков</h3>
-            {% for p in providers %}
-                <p>{{ p.name }}     {{ p.phone_number }}</p>
-            {% endfor %}
+{#            {% for p in providers %}#}
+{#                <p>{{ p.name }}     {{ p.phone_number }}</p>#}
+{#            {% endfor %}#}
+            <form action="{% url 'provider_notify' %}" method="post">
+                {% csrf_token %}
+                {% render_table providers %}
+                <input type="hidden" name = "order_id" value="{{ order.pk }}">
+
+                {% buttons %}
+                    {% buttons submit='Отправить' %}{% endbuttons %}
+                {% endbuttons %}
+            </form>
 
             <h4>Зона:</h4>
             {% for z in point_in_zone %}

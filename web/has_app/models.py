@@ -30,7 +30,7 @@ class Product(models.Model):
 class Order(models.Model):
     status_choice = (
         ('CRTD', 'Создан'),
-        ('PRCSD', 'В обработке'),
+        ('PRCSG', 'В обработке'),
         ('CMPLTD', 'Обработан'),
     )
 

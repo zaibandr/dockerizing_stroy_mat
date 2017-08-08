@@ -17,7 +17,8 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 class ProviderAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('pk', 'name', 'contact_name',)
+    search_fields = ('pk',)
 
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Product, ProductAdmin)

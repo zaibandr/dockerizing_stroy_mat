@@ -1,0 +1,13 @@
+{% extends 'has_app/base.html' %}
+{% load static %}
+{% load render_table from django_tables2 %}
+{% block content %}
+    {% if prev_sent %}
+        <h2>Заказ № {{ order_id }} ранее был отправлен поставщикам</h2>
+    {% else %}
+        <h2>Заказ № {{ order_id }} отправлен поставщикам:</h2>
+        {% render_table providers %}
+    {% endif %}
+{#    {{ request.POST }}#}
+{#    {{ resp }}#}
+{% endblock %}
