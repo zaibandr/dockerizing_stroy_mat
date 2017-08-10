@@ -13,6 +13,7 @@
         <li><a data-toggle="tab" href="#panel2">Мета</a></li>
         <li><a data-toggle="tab" href="#panel3">GIS</a></li>
         <li><a data-toggle="tab" href="#panel4">Поставщики</a></li>
+        <li><a data-toggle="tab" href="#panel5">Похожие заказы</a></li>
 
 {#        <li class="dropdown">#}
 {#        <a data-toggle="dropdown" class="dropdown-toggle" href="#">#}
@@ -40,6 +41,7 @@
                 <p>Описание: {{ order.description }}</p>
 
                 <p>Стоимость с доставкой: {{ order.cost }} р.</p>
+                <p>Поставщик: {{ order.provider }}</p>
             </div>
 
             <button type="button" class="btn btn-success" id="copy-button" aria-label="Left Align" data-clipboard-target="#order-info">
@@ -58,7 +60,7 @@
             {% if order.status == 'CRTD' or order.status == 'Создан' %}
                 <p>Заказ ожидает обработки</p>
                 <p>Прошло времени: {{ order.time_created|timesince:now }}</p>
-            {% elif order.status == 'PRCSD' or order.status == 'В обработке' %}
+            {% elif order.status == 'PRCSG' or order.status == 'В обработке' %}
                 <p>Заказ обрабатывается</p>
                 <p>Прошло времени: {{ order.time_created|timesince:now }}</p>
             {% else %}
@@ -81,11 +83,11 @@
             <p>{{ distance }}</p>
         </div>
         <div id="panel4" class="tab-pane fade">
-            <h3>Список поставщиков</h3>
+            <h3>Список подходящих поставщиков</h3>
 {#            {% for p in providers %}#}
 {#                <p>{{ p.name }}     {{ p.phone_number }}</p>#}
 {#            {% endfor %}#}
-            <form action="{% url 'provider_notify' %}" method="post">
+            <form action="{% url 'provider_notify' order.pk %}" method="post">
                 {% csrf_token %}
                 {% render_table providers %}
                 <input type="hidden" name = "order_id" value="{{ order.pk }}">
@@ -99,6 +101,10 @@
             {% for z in point_in_zone %}
                 <p>{{ z }}</p>
             {% endfor %}
+        </div>
+        <div id="panel5" class="tab-pane fade">
+            <h3>Похожие заказы</h3>
+            {% render_table similar_order %}
         </div>
     </div>
 

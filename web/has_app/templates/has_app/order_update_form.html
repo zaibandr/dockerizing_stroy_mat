@@ -5,32 +5,50 @@
 
 {% block content %}
     <h1>Обновить заказ</h1>
-    <div id="order_info">
-        <h2>Заказ номер: {{ order.pk }} </h2>
+    <div id="order-info">
+        <p>Заказ номер: {{ order.pk }} </p>
+        <p>Наименование: {{ order.product.name }}</p>
+        <p>Объем: {{ order.volume }}</p>
+        <p>Адрес: {{ order.address }}</p>
+        <p>Тонары: {{ order.get_tonar_display }}</p>
+        <p>Прием: {{ order.get_time_of_receipt_display }}</p>
+        <p>Оплата: {{ order.get_payment_display }}</p>
+        <p>Описание: {{ order.description }}</p>
 
-
-    <p>Наименование: {{ order.product.name }}</p>
-    <p>Адрес: {{ order.address }}</p>
-    <p>{{ order.time_stat_p}}</p>
-{#    <p>{{ order.time_stat_p|date:'Y m d H:i' }}</p>#}
-    <p>{{ order.status }}</p>
-{#    <p>Прошло времени: {{ order.time_stat_p|timesince:now }}</p>#}
-
-{#    {% buttons %}#}
-{#    <a href="{% url 'orders' %}" class="btn btn-default" role="button">Все заказы</a>#}
-{#    <a href="update" class="btn btn-info" role="button">Обновить</a>#}
-{#    {% endbuttons %}#}
-
+        <p>Стоимость с доставкой: {{ order.cost }} р.</p>
+        <p>Поставщик: {{ order.provider }}</p>
     </div>
-        <form action="{% url 'order_update' pk=order.pk%}" method="post" class="form">
+    <button type="button" class="btn btn-success" id="copy-button" aria-label="Left Align" data-clipboard-target="#order-info">
+        <span class="glyphicon glyphicon-copy" aria-hidden="true"></span>
+    </button>
+
+    <script type="text/javascript">
+        (function(){
+            new Clipboard('#copy-button');
+        })();
+    </script>
+
+    <hr>
+    <form action="{% url 'order_update' pk=order.pk%}" method="post" class="form">
 {#            {{ order.get_absolute_url }}#}
-            {% csrf_token %}
-            {% bootstrap_form form %}
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <input type="hidden" name = "status" value="CMPLTD">
 
-            {% buttons %}
-                <a href="{% url 'order-detail' pk=order.pk%}" class="btn btn-default" role="button">Отменить</a>
-                <input type="submit" class="btn btn-primary" value="Обновить" />
-            {% endbuttons %}
+        {% buttons %}
+            <a href="{% url 'order-detail' pk=order.pk%}" class="btn btn-default" role="button">Отменить</a>
+            <input type="submit" class="btn btn-primary" value="Обновить" />
+        {% endbuttons %}
 
-        </form>
+    </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css" />
+
+
+    <script type="text/javascript">
+        $('.selectpicker').selectpicker({
+          });
+    </script>
+
 {% endblock %}

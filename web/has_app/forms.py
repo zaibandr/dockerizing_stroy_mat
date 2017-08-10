@@ -71,8 +71,12 @@ class UpdateOrderForm(ModelForm):
     class Meta:
         model = Order
 
-        fields = ['cost', 'status', 'time_completed']
-        widgets = {'time_completed': HiddenInput()}
+        fields = ['provider', 'cost', 'status', 'time_completed']
+        widgets = {
+            'time_completed': HiddenInput(),
+            'status': HiddenInput(),
+            'provider': MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'})
+        }
 
 
 class OrderSearchForm(SearchForm):

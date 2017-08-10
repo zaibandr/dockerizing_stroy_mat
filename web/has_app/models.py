@@ -15,16 +15,24 @@ class Product(models.Model):
         return self.name
 
 
-# class CartItem(models.Model):
-#     product = models.ForeignKey(Product)
-#     quantity = models.IntegerField()
-#
-#     def __str__(self):
-#         return '{}\t({})'.format(self.product.name, self.quantity)
-#
-#
-# class Cart(models.Model):
-#     items = models.ManyToManyField(CartItem)
+class Provider(models.Model):
+
+    name = models.CharField(max_length=50, verbose_name='Имя')
+    contact_name = models.TextField(max_length=100, verbose_name='Контактное лицо')
+    phone_number = models.CharField(max_length=12, null=True, verbose_name='Телефон')
+    products = models.ManyToManyField(Product, verbose_name='Продукция')
+    # region = models.PolygonField(verbose_name='Регион')
+    geo_json = models.TextField(verbose_name='GeoJson')
+
+    class Meta:
+        verbose_name = 'Поставщик'
+        verbose_name_plural = 'Поставщики'
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('provider-detail', kwargs={'pk': self.pk})
 
 
 class Order(models.Model):
@@ -60,7 +68,7 @@ class Order(models.Model):
     status = models.CharField(max_length=7, choices=status_choice, default='CRTD', verbose_name='Статус')
 
     name = models.CharField(max_length=50, verbose_name='Имя')
-    phone_number = models.CharField(max_length=12, null=True, verbose_name='Телефон')
+    phone_number = models.CharField(max_length=60, null=True, verbose_name='Телефон')
     address = models.CharField(max_length=200, null=True, verbose_name='Адрес')
     tonar = models.IntegerField(choices=tonar_choice, default='Нет', verbose_name='Тонары')
     time_of_receipt = models.IntegerField(choices=receipt_choice, default='День', verbose_name='Время приема')
@@ -75,6 +83,8 @@ class Order(models.Model):
     longitude = models.FloatField(blank=True, null=True, verbose_name='Долгота')
     latitude = models.FloatField(blank=True, null=True, verbose_name='Широта')
     coordinate = models.CharField(blank=True, null=True, max_length=100, verbose_name='Координаты')
+
+    provider = models.ForeignKey(Provider, default=0, verbose_name='Поставщик')
 
     class Meta:
         verbose_name = "Заказ"
@@ -96,26 +106,6 @@ class Order(models.Model):
 
     def get_absolute_url(self):
         return reverse('order-detail', kwargs={'pk': self.pk})
-
-
-class Provider(models.Model):
-
-    name = models.CharField(max_length=50, verbose_name='Имя')
-    contact_name = models.TextField(max_length=100, verbose_name='Контактное лицо')
-    phone_number = models.CharField(max_length=12, null=True, verbose_name='Телефон')
-    products = models.ManyToManyField(Product, verbose_name='Продукция')
-    # region = models.PolygonField(verbose_name='Регион')
-    geo_json = models.TextField(verbose_name='GeoJson')
-
-    class Meta:
-        verbose_name = 'Поставщик'
-        verbose_name_plural = 'Поставщики'
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return reverse('provider-detail', kwargs={'pk': self.pk})
 
 
 class Zone(models.Model):

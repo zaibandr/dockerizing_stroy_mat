@@ -3,9 +3,9 @@
 {% load render_table from django_tables2 %}
 {% block content %}
     {% if prev_sent %}
-        <h2>Заказ № {{ order_id }} ранее был отправлен поставщикам</h2>
+        <h2><a href="{% url 'order-detail' order_id %}">Заказ №{{ order_id }}</a> ранее был отправлен поставщикам</h2>
     {% else %}
-        <h2>Заказ № {{ order_id }} отправлен поставщикам:</h2>
+        <h2><a href="{% url 'order-detail' order_id %}">Заказ №{{ order_id }}</a> отправлен поставщикам:</h2>
         {% render_table providers %}
     {% endif %}
 {#    {{ request.POST }}#}

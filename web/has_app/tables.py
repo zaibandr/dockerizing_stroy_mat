@@ -34,3 +34,10 @@ class AvailableProviderTable(tables.Table):
     class Meta:
         model = Provider
         fields = ('phone_number_checkbox', 'phone_number', 'contact_name', 'name')
+
+
+class SimilarOrderTable(tables.Table):
+
+    class Meta:
+        model = Order
+        fields = ('pk', 'product', 'cost', 'volume', 'address', 'provider_id', 'provider')

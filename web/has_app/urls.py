@@ -23,5 +23,5 @@ urlpatterns = [
     url(r'^search/$', search_views.order_search_form, name='search_form'),
     url(r'^autocomplete/$', search_views.autocomplete, name='autocomplete'),
 
-    url(r'^provider_notify/$', views.provider_notify, name='provider_notify')
+    url(r'^orders/(?P<pk>[0-9]+)/provider_notify/$', views.provider_notify, name='provider_notify')
 ]

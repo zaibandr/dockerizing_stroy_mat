@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
 from django_tables2 import RequestConfig
-from .tables import OrdersTable, AvailableProviderTable, ProviderTable
+from .tables import OrdersTable, AvailableProviderTable, ProviderTable, SimilarOrderTable
 
 from django.contrib.auth.models import User
 from .models import Order, Provider, Zone
@@ -30,7 +30,7 @@ def home_page(request):
     redirect('/orders/')
 
 
-def provider_notify(request):
+def provider_notify(request, pk):
     if request.method == 'POST':
         pks = request.POST.getlist('phone_number_checkbox')
 
@@ -45,13 +45,13 @@ def provider_notify(request):
 
         url = 'https://gate.smsaero.ru/testsend/'
 
-        order_id = request.POST.get('order_id')
+        # order_id = request.POST.get('order_id')
         context = {
             'providers': ProviderTable(Provider.objects.filter(pk__in=pks)),
-            'order_id': order_id
+            'order_id': pk
         }
 
-        order = Order.objects.get(pk=order_id)
+        order = Order.objects.get(pk=pk)
         if order.status == 'CRTD':
             order.status = 'PRCSG'
             order.save()
@@ -150,6 +150,9 @@ class OrderDetailView(DetailView):
                 point_within_provider.append(provider.pk)
 
         context['providers'] = AvailableProviderTable(Provider.objects.filter(pk__in=point_within_provider))
+
+        similar_order = Order.objects.filter(status='CMPLTD').filter(provider_id__in=point_within_provider)
+        context['similar_order'] = SimilarOrderTable(similar_order)
 
 
         # print(point_in_zone)
