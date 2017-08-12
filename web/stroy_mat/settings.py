@@ -45,7 +45,8 @@ class Base(Configuration):
         'configurations',
 
         'haystack',
-        #'django.contrib.gis'
+        'leaflet',
+        'djgeojson',
     ]
 
     MIDDLEWARE = [
@@ -168,5 +169,15 @@ class Prod(Base):
         },
     }
 
+    HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+
+    LEAFLET_CONFIG = {
+        # 'SPATIAL_EXTENT': (5.0, 44.0, 7.5, 46),
+        'DEFAULT_CENTER': (55.76, 37.64),
+        'DEFAULT_ZOOM': 8,
+        'MIN_ZOOM': 3,
+        'MAX_ZOOM': 18,
+    }

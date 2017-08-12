@@ -1,7 +1,7 @@
 from django.urls import reverse
 from django.db import models
 from django.contrib.auth.models import User
-# from django.contrib.gis.db import models
+from djgeojson.fields import PolygonField
 
 
 class Product(models.Model):
@@ -22,7 +22,7 @@ class Provider(models.Model):
     phone_number = models.CharField(max_length=12, null=True, verbose_name='Телефон')
     products = models.ManyToManyField(Product, verbose_name='Продукция')
     # region = models.PolygonField(verbose_name='Регион')
-    geo_json = models.TextField(verbose_name='GeoJson')
+    geom = PolygonField(default='[]')
 
     class Meta:
         verbose_name = 'Поставщик'

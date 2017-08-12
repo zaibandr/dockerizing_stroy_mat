@@ -32,7 +32,10 @@ with open('rnd_poly_yandex.json', 'r', encoding='utf-8') as f:
                 'contact_name': fake_name,
                 'phone_number': rnd_phone,
                 'products': list(set([rnd.randint(1, 21) for i in range(rnd.randint(10, 21))])),
-                'geo_json': feature['geometry']['coordinates'][0]
+                'geom': {
+                    'type': 'Polygon',
+                    'coordinates': [feature['geometry']['coordinates'][0]]
+                }
             }
         }
         print(provider)

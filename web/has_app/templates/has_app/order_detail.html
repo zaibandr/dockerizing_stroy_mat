@@ -2,6 +2,7 @@
 {% load static %}
 {% load render_table from django_tables2 %}
 {% load bootstrap3 %}
+{% load leaflet_tags %}
 {% block content %}
 
 
@@ -89,7 +90,7 @@
 {#            {% endfor %}#}
             <form action="{% url 'provider_notify' order.pk %}" method="post">
                 {% csrf_token %}
-                {% render_table providers %}
+                {% render_table providers_table %}
                 <input type="hidden" name = "order_id" value="{{ order.pk }}">
 
                 {% buttons %}
@@ -117,52 +118,102 @@
     <hr>
     </div>
 
-{#    <script data-require="jquery@2.2.4" data-semver="2.2.4" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>#}
+
+    {% leaflet_js %}
+    {% leaflet_css %}
+
+    {% leaflet_map "main" %}
+
+
+    <script type="text/javascript">
+        window.addEventListener("map:init", function (e) {
+            var detail = e.detail;
+
+            var marker = L.marker([{{ order.latitude|stringformat:"f" }}, {{ order.longitude|stringformat:"f"}}]).addTo(detail.map);
+            marker.bindPopup("{{ order.address }}").openPopup();
+
+            {% for name, poly, color in geo_data %}
+                var poly = L.polygon({{ poly}}, {
+                    color: 'red',
+                    fillColor: '{{ color }}',
+                    fillOpacity: 0.5
+                }
+                ).addTo(detail.map).bindPopup("{{ name }}");
+            {% endfor %}
+
+
+
+{#            L.geoJson({{ geo_data|safe }}, {#}
+{#                onEachFeature: function onEachFeature(feature, layer) {#}
+{#                var props = feature.properties;#}
+{#                layer.bindPopup(props.description);#}
+{#            }}).addTo(detail.map);#}
+
+
+        }, false);
+    </script>
+
+
+
 
 {#    <script type="text/javascript">#}
-{#        setInterval(function () {#}
-{#            $("#order_info").load("{% url 'order-detail' pk=order.pk %}");#}
-{#        }, 15000);#}
+{#      var dataurl = '{% url "data" %}';#}
+{#      window.addEventListener("map:init", function (event) {#}
+{#        var map = event.detail.map;#}
+{#        // Download GeoJSON data with Ajax#}
+{#        fetch(dataurl)#}
+{#          .then(function(resp) {#}
+{#            return resp.json();#}
+{#          })#}
+{#          .then(function(data) {#}
+{#            L.geoJson(data, {#}
+{#              onEachFeature: function onEachFeature(feature, layer) {#}
+{#                var props = feature.properties;#}
+{#                var content = `<img width="300" src="${props.picture_url}"/><h3>${props.title}</h3><p>${props.description}</p>`;#}
+{#                layer.bindPopup(content);#}
+{#            }}).addTo(map);#}
+{#          });#}
+{#      });#}
 {#    </script>#}
 
 
-    <div id="ya_map" class="container" style="height: 480px; padding-bottom: 40px; padding-top: 40px "></div>
-
-
-
-    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
-    <script type="text/javascript">
-        var myMap;
-
-        // Дождёмся загрузки API и готовности DOM.
-        ymaps.ready(init);
-
-        function init () {
-            // Создание экземпляра карты и его привязка к контейнеру с
-            // заданным id ("map").
-            myMap = new ymaps.Map('ya_map', {
-                // При инициализации карты обязательно нужно указать
-                // её центр и коэффициент масштабирования.
-                center: [55.76, 37.64], // Москва
-                zoom: 8,
-                //controls: ['routeEditor', 'geolocationControl', 'searchControl', 'zoomControl']
-            }, {
-                searchControlProvider: 'yandex#search'
-            });
-
-            var myGeocoder = ymaps.geocode("{{ order.address }}", {iconCaption: "{{ order.address }}", preset: 'islands#greenDotIconWithCaption'});
+{#    <div id="ya_map" class="container" style="height: 480px; padding-bottom: 40px; padding-top: 40px "></div>#}
+{##}
+{##}
+{##}
+{#    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>#}
+{#    <script type="text/javascript">#}
+{#        var myMap;#}
+{##}
+{#        // Дождёмся загрузки API и готовности DOM.#}
+{#        ymaps.ready(init);#}
+{##}
+{#        function init () {#}
+{#            // Создание экземпляра карты и его привязка к контейнеру с#}
+{#            // заданным id ("map").#}
+{#            myMap = new ymaps.Map('ya_map', {#}
+{#                // При инициализации карты обязательно нужно указать#}
+{#                // её центр и коэффициент масштабирования.#}
+{#                center: [55.76, 37.64], // Москва#}
+{#                zoom: 8,#}
+{#                //controls: ['routeEditor', 'geolocationControl', 'searchControl', 'zoomControl']#}
+{#            }, {#}
+{#                searchControlProvider: 'yandex#search'#}
+{#            });#}
+{##}
+{#            var myGeocoder = ymaps.geocode("{{ order.address }}", {iconCaption: "{{ order.address }}", preset: 'islands#greenDotIconWithCaption'});#}
 {#            myGeocoder.properties.iconCaption = "{{ order.address }}";#}
-            myGeocoder.then(
-                function (res) {
-                    myMap.geoObjects.add(res.geoObjects);
-
-                },
-                function (err) {
-                    // обработка ошибки
-                }
-            );
-        };
-    </script>
+{#            myGeocoder.then(#}
+{#                function (res) {#}
+{#                    myMap.geoObjects.add(res.geoObjects);#}
+{##}
+{#                },#}
+{#                function (err) {#}
+{#                    // обработка ошибки#}
+{#                }#}
+{#            );#}
+{#        };#}
+{#    </script>#}
 
 {#    <script type="text/javascript">#}
 {#        ymaps.ready(function () {#}

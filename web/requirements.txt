@@ -12,3 +12,5 @@ requests
 
 shapely
 geopy
+django-leaflet
+django-geojson [field]

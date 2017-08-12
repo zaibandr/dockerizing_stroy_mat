@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Order, Product, Provider
-
+from leaflet.admin import LeafletGeoAdmin
 # Register your models here.
 
 
@@ -22,4 +22,4 @@ class ProviderAdmin(admin.ModelAdmin):
 
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Product, ProductAdmin)
-admin.site.register(Provider, ProviderAdmin)
+admin.site.register(Provider, LeafletGeoAdmin)

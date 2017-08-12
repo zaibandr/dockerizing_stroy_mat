@@ -19,11 +19,12 @@ from .forms import NewOrderForm, UpdateOrderForm, EditOrderForm
 import datetime
 
 from geopy.geocoders import Yandex
-from geopy.distance import vincenty
 from shapely.geometry import Polygon, Point
 import json
 
 import requests
+
+import random
 
 
 def home_page(request):
@@ -144,21 +145,26 @@ class OrderDetailView(DetailView):
         context['point_in_zone'] = point_in_zone
 
         point_within_provider = []
+        geo_data = []
         for provider in Provider.objects.all():
-            polygon = Polygon(json.loads(provider.geo_json))
+            polygon = Polygon(provider.geom['coordinates'][0])
             if polygon.contains(point):
                 point_within_provider.append(provider.pk)
 
-        context['providers'] = AvailableProviderTable(Provider.objects.filter(pk__in=point_within_provider))
+                hex_color = [hex(random.randrange(0, 255))[2:] for _ in range(3)]
+                color = '#{}'.format(''.join(hex_color))
+                poly = [[p[1], p[0]]for p in provider.geom['coordinates'][0]]
+
+                geo_data.append([provider.name, poly, color])
+
+        context['providers_table'] = AvailableProviderTable(Provider.objects.filter(pk__in=point_within_provider))
+        # context['polygon_coords'] = polygon_coords
 
         similar_order = Order.objects.filter(status='CMPLTD').filter(provider_id__in=point_within_provider)
         context['similar_order'] = SimilarOrderTable(similar_order)
 
-
-        # print(point_in_zone)
-
         # features = []
-        # for zone in point_in_zone:
+        # for p in data:
         #     feature = {
         #         'properties': {
         #             'fill': '#00FF00',
@@ -166,13 +172,11 @@ class OrderDetailView(DetailView):
         #             'stroke-width': '5',
         #             'fill-opacity': 0.6,
         #             'stroke': '#ed4543',
-        #             'description': zone.name
+        #             'description': p.name
         #         },
         #         'id': len(features),
         #         'geometry': {
-        #             'coordinates': [
-        #                 zone.polygon
-        #             ],
+        #             'coordinates': p.geom,
         #             'type': 'Polygon'
         #         },
         #         'type': 'Feature'
@@ -185,8 +189,8 @@ class OrderDetailView(DetailView):
         #     'type': 'FeatureCollection',
         #     'features': features
         # }
-        #
-        # context['geo_json'] = json.dumps(geo_json)
+
+        context['geo_data'] = geo_data
 
         return context
 
