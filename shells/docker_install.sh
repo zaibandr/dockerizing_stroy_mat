@@ -15,4 +15,4 @@ sudo add-apt-repository \
 sudo apt-get update
 apt install -y docker-ce
 apt install -y python3-pip
-pip3 install -y docker-compose
+pip3 install docker-compose

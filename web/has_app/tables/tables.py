@@ -1,6 +1,6 @@
 import django_tables2 as tables
 from django.utils.html import format_html
-from .models import Order, Provider
+from has_app.models import Order, Provider
 
 
 class ProductColumn(tables.Column):

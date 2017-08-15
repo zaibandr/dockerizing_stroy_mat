@@ -4,9 +4,9 @@ web:
   expose:
     - "8000"
   volumes:
-    - webdata_app:/usr/src/app
-    - webdata_static:/usr/src/app/static
-  env_file: .env
+    - webdata_app:/usr/src/web
+    - webdata_static:/usr/src/web/static
+  env_file: dev.env
   environment:
     DEBUG: 'true'
   command: /usr/local/bin/gunicorn --env DJANGO_SETTINGS_MODULE=stroy_mat.settings --env DJANGO_CONFIGURATION=Prod stroy_mat.wsgi:application -w 2 -b :8000 --reload

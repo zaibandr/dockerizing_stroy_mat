@@ -1,0 +1,49 @@
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
+
+from django.views.generic.edit import UpdateView
+
+from django.contrib.auth.models import User
+from has_app.models import Order
+from has_app.forms import NewOrderForm, EditOrderForm
+
+from geopy.geocoders import Yandex
+
+
+def new_order_form(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = NewOrderForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            ###########################
+            # set author field in form current user
+            # https://stackoverflow.com/questions/18246326/in-django-how-do-i-set-user-field-in-form-to-the-currently-logged-in-user
+            ###########################
+            new_order = form.save(commit=False)
+
+            new_order.manager = User.objects.get(username=request.user)
+
+            geo_locator = Yandex()
+            location = geo_locator.geocode(new_order.address, timeout=10)
+            new_order.longitude = location.longitude
+            new_order.latitude = location.latitude
+            new_order.coordinate = location.point
+
+            new_order.save()
+
+            last_order_url = Order.objects.last().get_absolute_url()
+            return HttpResponseRedirect(last_order_url)
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = NewOrderForm()
+
+    return render(request, "has_app/new_order.html", {'form': form})
+
+
+class EditOrder(UpdateView):
+    model = Order
+    form_class = EditOrderForm
+    template_name_suffix = '_edit_form'

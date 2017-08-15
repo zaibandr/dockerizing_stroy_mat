@@ -1,0 +1,12 @@
+{% extends 'has_app/base.html' %}
+{% load render_table from django_tables2 %}
+{% load bootstrap3 %}
+
+{% block content %}
+    <form action="" method="get" class="form-inline">
+        {{ filter.form.as_p }}
+        <input type="submit" />
+    </form>
+
+    {% render_table table %}
+{% endblock %}

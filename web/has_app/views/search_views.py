@@ -2,14 +2,15 @@ import json
 from django.shortcuts import render
 
 from django.http import HttpResponse
-from .models import Order
 
 # from haystack.inputs import AutoQuery, Clean
 from haystack.query import SearchQuerySet
 
 from django_tables2 import RequestConfig
-from .tables import OrdersTable
-from .forms import OrderSearchForm
+
+from has_app.tables import OrdersTable
+from has_app.forms import OrderSearchForm
+from has_app.models import Order
 
 
 def sqs_to_qs(search_qs):
