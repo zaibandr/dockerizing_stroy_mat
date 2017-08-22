@@ -1,0 +1,23 @@
+{% extends 'has_app/base.html' %}
+{% load static %}
+{% load bootstrap3 %}
+{% block title %}Изменить отгрузку{% endblock %}
+
+{% block content %}
+    <h1>Изменить отгрузку</h1>
+        <form action="{% url 'shipment_edit' pk=order.pk%}" method="post" class="form-horizontal">
+            {% csrf_token %}
+            {% bootstrap_form form layout="horizontal"%}
+
+            {% buttons %}
+                {% buttons submit='Изменить' layout='horizontal' %}{% endbuttons %}
+            {% endbuttons %}
+
+        </form>
+
+    {% include "has_app/sub_tpl/select_picker.html" %}
+
+    {% include "has_app/sub_tpl/address_suggestion.html" %}
+
+
+{% endblock %}

@@ -1,13 +1,15 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic.detail import DetailView
 
 from django_tables2 import RequestConfig
 from django.utils import timezone
 
+from django.contrib.auth.models import User
 from has_app.tables import AvailableProviderTable, SimilarOrderTable
-from has_app.models import Order, Provider, Zone
-from has_app.tables import OrdersTable
+from has_app.models import Order, Provider, Zone, Shipment, Comment
+from has_app.tables import OrdersTable, ShipmentTable
+from has_app.forms import CommentForm
 
 from shapely.geometry import Polygon, Point
 import json
@@ -17,7 +19,10 @@ import random
 
 @login_required()
 def orders(request, status='all'):
-    all_orders_sqs = Order.objects.all()
+    if request.user.is_staff:
+        all_orders_sqs = Order.objects.all()
+    else:
+        all_orders_sqs = Order.objects.filter(manager=request.user)
 
     all_orders = OrdersTable(all_orders_sqs)
 
@@ -48,7 +53,6 @@ class OrderDetailView(DetailView):
         #
         # context['distance'] = '{} km'.format(vincenty(loc_coord, center_coord).km)
         # #########################################################################
-
         point_in_zone = []
         point = Point((self.object.longitude, self.object.latitude))
         for zone in Zone.objects.all():
@@ -62,50 +66,84 @@ class OrderDetailView(DetailView):
 
         point_within_provider = []
         geo_data = []
-        for provider in Provider.objects.all():
+        for provider in Provider.objects.filter(products__id__exact=self.object.product.id):
             polygon = Polygon(provider.geom['coordinates'][0])
             if polygon.contains(point):
                 point_within_provider.append(provider.pk)
 
-                hex_color = [hex(random.randrange(0, 255))[2:] for _ in range(3)]
-                color = '#{}'.format(''.join(hex_color))
-                poly = [[p[1], p[0]]for p in provider.geom['coordinates'][0]]
+                color = random.choice(
+                    [
+                        'Red', 'DarkRed', 'Yellow', 'OrangeRed',
+                        'Blue', 'DarkBlue', 'DeepSkyBlue', 'DeepPink',
+                        'Green', 'Lime', 'SpringGreen', 'Black'
+                     ]
+                )
+                popup = '<a href="{}" >{}</a>'.format(provider.get_absolute_url(), provider.name)
+                poly_coords = [[p[1], p[0]]for p in provider.geom['coordinates'][0]]
 
-                geo_data.append([provider.name, poly, color])
+                geo_data.append([polygon, popup, poly_coords, color])
 
         context['providers_table'] = AvailableProviderTable(Provider.objects.filter(pk__in=point_within_provider))
-        # context['polygon_coords'] = polygon_coords
 
-        similar_order = Order.objects.filter(status='CMPLTD').filter(provider_id__in=point_within_provider)
+        similar_order = Order.objects.filter(
+            provider_id__in=point_within_provider,
+            status='CMPLTD',
+            product_id=self.object.product.id
+        )
+
         context['similar_order'] = SimilarOrderTable(similar_order)
 
-        # features = []
-        # for p in data:
-        #     feature = {
-        #         'properties': {
-        #             'fill': '#00FF00',
-        #             'stroke-opacity': 0.9,
-        #             'stroke-width': '5',
-        #             'fill-opacity': 0.6,
-        #             'stroke': '#ed4543',
-        #             'description': p.name
-        #         },
-        #         'id': len(features),
-        #         'geometry': {
-        #             'coordinates': p.geom,
-        #             'type': 'Polygon'
-        #         },
-        #         'type': 'Feature'
-        #     }
-        #     features.append(feature)
-        #
-        # # print(features)
-        #
-        # geo_json = {
-        #     'type': 'FeatureCollection',
-        #     'features': features
-        # }
+        sorted_geo_data = sorted(geo_data, key=lambda a: a[0].area, reverse=True)
 
+        geo_data = [[pr, poly_coords, clr]for _, pr, poly_coords, clr in sorted_geo_data]
         context['geo_data'] = geo_data
+        context['comments'] = Comment.objects.filter(order=self.object.pk)
 
         return context
+
+
+class ProviderDetailView(DetailView):
+    model = Provider
+    template_name = 'has_app/provider_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProviderDetailView, self).get_context_data(**kwargs)
+        context['poly_coord'] = [[p[1], p[0]]for p in self.object.geom['coordinates'][0]]
+
+        context['provider_orders'] = SimilarOrderTable(Order.objects.filter(provider_id=self.object.pk))
+
+        return context
+
+
+@login_required()
+def shipments(request, status='all'):
+    if request.user.is_staff:
+        all_shipment_sqs = Shipment.objects.all()
+    else:
+        all_shipment_sqs = Shipment.objects.filter(manager=request.user)
+
+    all_shipment = ShipmentTable(all_shipment_sqs)
+
+    RequestConfig(request).configure(all_shipment)
+    all_shipment.paginate(page=request.GET.get('page', 1), per_page=10)
+
+    context = {
+        'shipments': all_shipment,
+    }
+
+    return render(request, 'has_app/shipments.html', context)
+
+
+def add_comment_to_order(request, pk):
+    order = get_object_or_404(Order, pk=pk)
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = User.objects.get(username=request.user)
+            comment.order = order
+            comment.save()
+            return redirect('order-detail', pk=order.pk)
+    else:
+        form = CommentForm()
+    return render(request, 'has_app/add_comment_to_order.html', {'form': form})

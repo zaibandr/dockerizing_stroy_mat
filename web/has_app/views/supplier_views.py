@@ -13,6 +13,22 @@ import datetime
 import requests
 
 
+####################################################################
+# import for supplier order detail view
+from django.views.generic.detail import DetailView
+
+from django.utils import timezone
+
+from has_app.tables import AvailableProviderTable, SimilarOrderTable
+from has_app.models import Zone
+
+from shapely.geometry import Polygon, Point
+import json
+
+import random
+####################################################################
+
+
 def provider_notify(request, pk):
     if request.method == 'POST':
         pks = request.POST.getlist('phone_number_checkbox')
@@ -52,12 +68,16 @@ class OrderUpdate(UpdateView):
     model = Order
     form_class = UpdateOrderForm
 
-    template_name_suffix = '_update_form'
+    # template_name_suffix = '_update_form'
+    template_name = 'has_app/supplier/order_update_form.html'
 
     def post(self, request, **kwargs):
         request.POST = request.POST.copy()
         print(request.POST)
         print(request.POST['time_completed'])
-        if request.POST['status'] == 'CMPLTD' and request.POST['time_completed'] == '':
+        if request.POST['provider'] == '0' or request.POST['cost'] == '0':
+            request.POST['status'] = 'CRTD'
+            request.POST['time_completed'] = None
+        else:
             request.POST['time_completed'] = datetime.datetime.now()
         return super(OrderUpdate, self).post(request, **kwargs)

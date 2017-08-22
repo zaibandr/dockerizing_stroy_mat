@@ -4,8 +4,9 @@ from django.http import HttpResponseRedirect
 from django.views.generic.edit import UpdateView
 
 from django.contrib.auth.models import User
-from has_app.models import Order
+from has_app.models import Order, Shipment, Comment
 from has_app.forms import NewOrderForm, EditOrderForm
+from has_app.forms import NewShipmentForm, EditShipmentForm
 
 from geopy.geocoders import Yandex
 
@@ -40,10 +41,47 @@ def new_order_form(request):
     else:
         form = NewOrderForm()
 
-    return render(request, "has_app/new_order.html", {'form': form})
+    return render(request, "has_app/manager/new_order.html", {'form': form})
 
 
 class EditOrder(UpdateView):
     model = Order
     form_class = EditOrderForm
-    template_name_suffix = '_edit_form'
+    # template_name_suffix = '_edit_form'
+    template_name = 'has_app/manager/order_edit_form.html'
+
+
+def new_shipment_form(request):
+
+    if request.method == 'POST':
+
+        form = NewShipmentForm(request.POST)
+
+        if form.is_valid():
+            ###########################
+            # set author field in form current user
+            # https://stackoverflow.com/questions/18246326/in-django-how-do-i-set-user-field-in-form-to-the-currently-logged-in-user
+            ###########################
+            new_shipment = form.save(commit=False)
+
+            new_shipment.manager = User.objects.get(username=request.user)
+
+            new_shipment.profit = (new_shipment.cost_out - new_shipment.cost_in) * new_shipment.volume
+            new_shipment.price = new_shipment.cost_out * new_shipment.volume
+
+            new_shipment.save()
+
+            # last_shipment_url = Shipment.objects.last().get_absolute_url()
+            return HttpResponseRedirect('/shipments/')
+
+    else:
+        form = NewShipmentForm()
+
+    return render(request, "has_app/manager/new_shipment.html", {'form': form})
+
+
+class EditShipment(UpdateView):
+    model = Shipment
+    form_class = EditShipmentForm
+
+    template_name = 'has_app/manager/shipment_edit_form.html'

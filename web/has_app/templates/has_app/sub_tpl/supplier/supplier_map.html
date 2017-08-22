@@ -1,0 +1,26 @@
+{% load leaflet_tags %}
+{% leaflet_js %}
+{% leaflet_css %}
+
+{% leaflet_map "main" %}
+
+
+<script type="text/javascript">
+    window.addEventListener("map:init", function (e) {
+        var detail = e.detail;
+
+        var marker = L.marker([{{ order.latitude|stringformat:"f" }}, {{ order.longitude|stringformat:"f"}}]).addTo(detail.map);
+        marker.bindPopup("{{ order.address }}").openPopup();
+
+        {% for name, poly, color in geo_data %}
+            var poly = L.polygon({{ poly}}, {
+                color: '{{ color }}',
+                fillColor: '{{ color }}',
+                fillOpacity: 0.1
+            }
+            ).addTo(detail.map).bindPopup('{{ name|safe }}');
+        {% endfor %}
+
+
+    }, false);
+</script>

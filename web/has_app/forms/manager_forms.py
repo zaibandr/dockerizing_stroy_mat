@@ -1,5 +1,5 @@
 from django.forms import ModelForm, Textarea, Select
-from has_app.models import Order
+from has_app.models import Order, Shipment
 
 
 class MySelect(Select):
@@ -32,4 +32,41 @@ class NewOrderForm(ModelForm):
 
 
 class EditOrderForm(NewOrderForm):
+    pass
+
+
+class NewShipmentForm(ModelForm):
+
+    class Meta:
+        model = Shipment
+        fields = [
+            'product',
+            'customer',
+            'provider',
+            'transporter',
+            'address',
+
+            'description',
+            'manager',
+
+            'volume',
+            'cost_in',
+            'cost_out',
+
+
+            'manager',
+            'status',
+            'price',
+            'profit'
+        ]
+
+        exclude = ['manager', 'status', 'price', 'profit']
+
+        widgets = {
+            'description': Textarea(attrs={'cols': 40, 'rows': 4}),
+            'product': MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'})
+        }
+
+
+class EditShipmentForm(NewShipmentForm):
     pass

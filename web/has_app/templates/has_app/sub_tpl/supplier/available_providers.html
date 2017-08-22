@@ -1,0 +1,17 @@
+{% load render_table from django_tables2 %}
+{% load bootstrap3 %}
+
+<form action="{% url 'provider_notify' order.pk %}" method="post">
+    {% csrf_token %}
+    {% render_table providers_table %}
+    <input type="hidden" name = "order_id" value="{{ order.pk }}">
+
+    {% buttons %}
+        {% buttons submit='Отправить' %}{% endbuttons %}
+    {% endbuttons %}
+</form>
+
+<h4>Зона:</h4>
+{% for z in point_in_zone %}
+    <p>{{ z }}</p>
+{% endfor %}

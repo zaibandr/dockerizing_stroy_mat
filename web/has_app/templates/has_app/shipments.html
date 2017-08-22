@@ -3,10 +3,9 @@
 {% load render_table from django_tables2 %}
 {% block content %}
     {% if user.is_staff %}
-        <h1>Все заказы</h1>
+        <h1>Все отгрузки</h1>
     {% else %}
-        <h1>Заказы менеджера({{ user.get_username }})</h1>
+        <h1>Отгрузки менеджера({{ user.get_username }})</h1>
     {% endif %}
-
-    {% render_table orders %}
+    {% render_table shipments %}
 {% endblock %}

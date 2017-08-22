@@ -34,7 +34,7 @@ class Order(models.Model):
     # author = models.ForeignKey(User, default=User.objects.get(username='panagoa').pk)
     manager = models.ForeignKey(User)
 
-    volume = models.IntegerField(default=3, verbose_name='Объем')
+    volume = models.IntegerField(default=10, verbose_name='Объем')
     description = models.TextField(blank=True, null=True, verbose_name='Описание')
     status = models.CharField(max_length=7, choices=status_choice, default='CRTD', verbose_name='Статус')
 
@@ -77,3 +77,10 @@ class Order(models.Model):
 
     def get_absolute_url(self):
         return reverse('order-detail', kwargs={'pk': self.pk})
+
+
+class Comment(models.Model):
+    order = models.ForeignKey(Order)
+    author = models.ForeignKey(User)
+    text = models.TextField(max_length=300)
+    time_created = models.DateTimeField(auto_now_add=True)
