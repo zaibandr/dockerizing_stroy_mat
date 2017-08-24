@@ -16,7 +16,7 @@
             var poly = L.polygon({{ poly}}, {
                 color: '{{ color }}',
                 fillColor: '{{ color }}',
-                fillOpacity: 0.1
+                fillOpacity: 0.01
             }
             ).addTo(detail.map).bindPopup('{{ name|safe }}');
         {% endfor %}

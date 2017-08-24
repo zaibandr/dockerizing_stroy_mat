@@ -3,6 +3,7 @@
 <hr>
 {% buttons %}
     <a href="{% url 'orders' %}" class="btn btn-success" role="button">Все заказы</a>
+    <a href="{% url 'order_edit' pk=order.pk%}" class="btn btn-primary" role="button">Изменить</a>
     <a href="{% url 'order_update' pk=order.pk%}" class="btn btn-info" role="button">Обновить</a>
 {% endbuttons %}
 <hr>
