@@ -5,39 +5,45 @@
         <h2>Заказ номер: {{ order.pk }} </h2>
 
         <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#panel1">Детали</a></li>
-            <li><a data-toggle="tab" href="#panel2">Мета</a></li>
-            <li><a data-toggle="tab" href="#panel3">Поставщики</a></li>
-            <li><a data-toggle="tab" href="#panel4">Похожие заказы</a></li>
-            <li><a data-toggle="tab" href="#panel5">Коментарии</a></li>
+            <li class="active"><a data-toggle="tab" href="#order-info-panel">Детали</a></li>
+            <li><a data-toggle="tab" href="#meta-panel">Мета</a></li>
+            <li><a data-toggle="tab" href="#providers-panel">Поставщики</a></li>
+            <li><a data-toggle="tab" href="#similar-order-panel">Похожие заказы</a></li>
+            <li><a data-toggle="tab" href="#comments-panel">Коментарии</a></li>
+            <li><a data-toggle="tab" href="#notified-providers">Уведомленные поставщики</a></li>
+
         </ul>
 
         <div class="tab-content">
-            <div id="panel1" class="tab-pane fade in active">
+            <div id="order-info-panel" class="tab-pane fade in active">
                 <h3>Детали заказа</h3>
 
                 {% include "has_app/sub_tpl/order_info.html" %}
 
             </div>
-            <div id="panel2" class="tab-pane fade">
+            <div id="meta-panel" class="tab-pane fade">
                 <h3>Мета</h3>
 
                 {% include "has_app/sub_tpl/supplier/meta.html" %}
 
             </div>
-            <div id="panel3" class="tab-pane fade">
+            <div id="providers-panel" class="tab-pane fade">
                 <h3>Список подходящих поставщиков</h3>
 
                 {% include "has_app/sub_tpl/supplier/available_providers.html" %}
 
             </div>
-            <div id="panel4" class="tab-pane fade">
+            <div id="similar-order-panel" class="tab-pane fade">
                 <h3>Похожие заказы</h3>
                 {% render_table similar_order %}
             </div>
-            <div id="panel5" class="tab-pane fade">
+            <div id="comments-panel" class="tab-pane fade">
                 {% include "has_app/sub_tpl/comments.html" %}
             </div>
+            <div id="notified-providers" class="tab-pane fade">
+                {% render_table notified_providers %}
+            </div>
+
         </div>
 
         {% include "has_app/sub_tpl/supplier/management_panel.html" %}

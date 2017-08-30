@@ -18,3 +18,7 @@ class FilteredOrderListView(FilterView, SingleTableView):
     template_name = 'has_app/filter_view.html'
 
     filterset_class = OrderFilter
+
+    table_pagination = {
+        'per_page': 50
+    }

@@ -3,12 +3,14 @@ from django.http import HttpResponseRedirect
 
 from django.views.generic.edit import UpdateView
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from has_app.models import Order, Shipment, Comment
 from has_app.forms import NewOrderForm, EditOrderForm
 from has_app.forms import NewShipmentForm, EditShipmentForm
 
 from geopy.geocoders import Yandex
+
+from notifications.signals import notify
 
 
 def new_order_form(request):
@@ -34,7 +36,19 @@ def new_order_form(request):
 
             new_order.save()
 
-            last_order_url = Order.objects.last().get_absolute_url()
+            last_oder = Order.objects.last()
+            last_order_url = last_oder.get_absolute_url()
+
+            # send notify
+            notify.send(sender=User.objects.get(username=request.user),
+                        recipient=User.objects.filter(groups=2),
+                        verb='''Создал(а) новый заказ 
+                                <a href="{}">№{}</a>'''.format(
+                                    last_oder.get_absolute_url(),
+                                    last_oder.pk
+                                )
+                        )
+
             return HttpResponseRedirect(last_order_url)
 
     # if a GET (or any other method) we'll create a blank form
@@ -49,6 +63,19 @@ class EditOrder(UpdateView):
     form_class = EditOrderForm
     # template_name_suffix = '_edit_form'
     template_name = 'has_app/manager/order_edit_form.html'
+
+    def form_valid(self, form):
+        # send notify
+        notify.send(sender=User.objects.get(username=self.request.user),
+                    recipient=User.objects.filter(groups=2),
+                    verb='''Изменил(а) заказ 
+                            <a href="{}">№{}</a>'''.format(
+                            self.object.get_absolute_url(),
+                            self.object.pk
+                        )
+                    )
+
+        return super(EditOrder, self).form_valid(form)
 
 
 def new_shipment_form(request):

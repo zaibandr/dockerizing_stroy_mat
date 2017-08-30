@@ -9,7 +9,6 @@ from .product_model import Product
 class Order(models.Model):
     status_choice = (
         ('CRTD', 'Создан'),
-        ('PRCSG', 'В обработке'),
         ('CMPLTD', 'Обработан'),
     )
 
@@ -83,4 +82,12 @@ class Comment(models.Model):
     order = models.ForeignKey(Order)
     author = models.ForeignKey(User)
     text = models.TextField(max_length=300)
+    time_created = models.DateTimeField(auto_now_add=True)
+
+
+class SmsNotify(models.Model):
+    order = models.ForeignKey(Order)
+    provider = models.ForeignKey(Provider)
+    sms_id = models.IntegerField(default=0)
+    cost = models.IntegerField(blank=True, null=True)
     time_created = models.DateTimeField(auto_now_add=True)

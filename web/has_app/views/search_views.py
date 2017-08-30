@@ -18,14 +18,26 @@ def sqs_to_qs(search_qs):
         yield item.object
 
 
-def autocomplete(request):
+def autocomplete_order_id(request):
     sqs = SearchQuerySet().autocomplete(text=request.GET.get('q', ''))[:10]
-    suggestions = [result.content_auto for result in sqs]
+    suggestions = [result.pk for result in sqs]
 
-    suggestions = [{'text': i} for i in suggestions]
-    # Make sure you return a JSON object, not a bare list.
-    # Otherwise, you could be vulnerable to an XSS attack.
-    the_data = json.dumps(suggestions)
+    the_data = json.dumps([{'order': i} for i in suggestions])
+    return HttpResponse(the_data, content_type='application/json')
+
+
+def autocomplete_order_address(request):
+    sqs = SearchQuerySet().autocomplete(text=request.GET.get('q', ''))[:10]
+    suggestions = [result.address for result in sqs]
+
+    clear_suggestions = []
+    d = {}
+    for s in suggestions:
+        if s not in d:
+            clear_suggestions.append(s)
+            d[s] = True
+
+    the_data = json.dumps([{'address': i} for i in clear_suggestions])
     return HttpResponse(the_data, content_type='application/json')
 
 

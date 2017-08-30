@@ -1,3 +1,4 @@
+{{ object.pk }}
 {{ object.address }}
 {{ object.phone_number }}
 {{ object.description }}

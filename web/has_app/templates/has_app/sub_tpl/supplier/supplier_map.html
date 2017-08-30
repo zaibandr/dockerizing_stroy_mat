@@ -12,13 +12,48 @@
         var marker = L.marker([{{ order.latitude|stringformat:"f" }}, {{ order.longitude|stringformat:"f"}}]).addTo(detail.map);
         marker.bindPopup("{{ order.address }}").openPopup();
 
-        {% for name, poly, color in geo_data %}
-            var poly = L.polygon({{ poly}}, {
+        var onPolyClick = function(event){
+            var layer = event.target;
+
+            if (event.target.options.fillOpacity == 0){
+                layer.setStyle({fillOpacity: 0.7});
+                q.update(layer.feature.properties);
+            }else {
+                layer.setStyle({fillOpacity: 0});
+                q.update(layer.feature.properties);
+            }
+
+        };
+
+{#        var MouseOver= function(event){#}
+{#            var layer = event.target;#}
+{#            layer.setStyle({fillOpacity: 0.7});#}
+{#            q.update(layer.feature.properties);#}
+{#        };#}
+{##}
+{#        var MouseOut= function(event){#}
+{#            var layer = event.target;#}
+{#            layer.setStyle({fillOpacity: 0});#}
+{#            q.update(layer.feature.properties);#}
+{#        };#}
+
+
+        {% for name, popup, poly, color in geo_data %}
+            var {{ name }} = L.polygon({{ poly}}, {
                 color: '{{ color }}',
                 fillColor: '{{ color }}',
-                fillOpacity: 0.01
+                fillOpacity: 0
             }
-            ).addTo(detail.map).bindPopup('{{ name|safe }}');
+            ).addTo(detail.map).bindPopup('{{ popup|safe }}');
+
+            {{ name }}.on({
+                    'click': onPolyClick,
+{#                    'mouseover': MouseOver,#}
+{#                    'onmouseout': MouseOut#}
+
+                }
+            );
+
         {% endfor %}
 
 

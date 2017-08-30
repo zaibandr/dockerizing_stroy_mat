@@ -1,6 +1,6 @@
 import django_tables2 as tables
 from django.utils.html import format_html
-from has_app.models import Order, Provider, Shipment
+from has_app.models import Order, Provider, Shipment, SmsNotify
 
 
 class ProductColumn(tables.Column):
@@ -16,7 +16,8 @@ class OrdersTable(tables.Table):
         order_by = '-time_updated'
 
         # add class="paleblue" to <table> tag
-        fields = ('id', 'product', 'volume', 'status', 'phone_number', 'address', 'time_created', 'time_updated')
+        fields = ('id', 'product', 'volume', 'status', 'phone_number',
+                  'address', 'manager', 'time_created', 'time_updated')
 
         row_attrs = {
             'class': lambda record: 'success' if record.status == 'CMPLTD' else 'warning' if record.status == 'PRCSG' else 'danger'
@@ -43,6 +44,19 @@ class AvailableProviderTable(tables.Table):
     class Meta:
         model = Provider
         fields = ('phone_number_checkbox', 'phone_number', 'contact_name', 'name')
+
+
+class NotifiedProviders(tables.Table):
+    provider_phone_number = tables.Column(accessor='provider.phone_number')
+    provider_name = ProviderNameColumn(accessor='provider.name')
+    provider_contact_name = tables.Column(accessor='provider.contact_name')
+    # cost_input = tables.TemplateColumn(template)
+
+    class Meta:
+        model = SmsNotify
+        fields = ('time_created', 'sms_id', 'cost')
+        sequence = ('provider_phone_number', 'provider_contact_name',
+                    'provider_name', 'time_created', 'sms_id')
 
 
 class SimilarProviderNameColumn(tables.Column):

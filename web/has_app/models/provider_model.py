@@ -8,7 +8,7 @@ from .product_model import Product
 class Provider(models.Model):
 
     name = models.CharField(max_length=50, verbose_name='Имя')
-    contact_name = models.TextField(max_length=100, verbose_name='Контактное лицо')
+    contact_name = models.TextField(max_length=400, verbose_name='Контактное лицо')
     phone_number = models.CharField(max_length=12, null=True, verbose_name='Телефон')
     mail_1 = models.EmailField(blank=True, null=True, verbose_name='mail_1')
     mail_2 = models.EmailField(blank=True, null=True, verbose_name='mail_2')

@@ -6,15 +6,19 @@ from django_tables2 import RequestConfig
 from django.utils import timezone
 
 from django.contrib.auth.models import User
-from has_app.tables import AvailableProviderTable, SimilarOrderTable
-from has_app.models import Order, Provider, Zone, Shipment, Comment
-from has_app.tables import OrdersTable, ShipmentTable
+from has_app.tables import AvailableProviderTable, SimilarOrderTable, ProviderTable
+from has_app.models import Order, Provider, Zone, Shipment, Comment, SmsNotify
+from has_app.tables import OrdersTable, ShipmentTable, NotifiedProviders
 from has_app.forms import CommentForm
 
 from shapely.geometry import Polygon, Point
+from geopy.distance import vincenty
+
 import json
 
 import random
+
+from notifications.signals import notify
 
 
 @login_required()
@@ -80,8 +84,9 @@ class OrderDetailView(DetailView):
                 )
                 popup = '<a href="{}" >{}</a>'.format(provider.get_absolute_url(), provider.name)
                 poly_coords = [[p[1], p[0]]for p in provider.geom['coordinates'][0]]
+                name = 'provider_{}'.format(str(provider.pk))
 
-                geo_data.append([polygon, popup, poly_coords, color])
+                geo_data.append([polygon, name, popup, poly_coords, color])
 
         context['providers_table'] = AvailableProviderTable(Provider.objects.filter(pk__in=point_within_provider))
 
@@ -91,13 +96,30 @@ class OrderDetailView(DetailView):
             product_id=self.object.product.id
         )
 
-        context['similar_order'] = SimilarOrderTable(similar_order)
+        similar_order_pk = []
+        d = {self.object.pk: True}
+        this_order_coord = (self.object.longitude, self.object.latitude)
+        dist = 2
+        while len(similar_order_pk) < 5 and dist <= 10:
+            for o in similar_order:
+                if vincenty(this_order_coord, (o.longitude, o.latitude)).km < dist and o.pk not in d:
+                    similar_order_pk.append(o.pk)
+                    d[o.pk] = True
+                if len(similar_order_pk) >= 5:
+                    break
+            dist += 2
+
+        context['similar_order'] = SimilarOrderTable(Order.objects.filter(pk__in=similar_order_pk))
 
         sorted_geo_data = sorted(geo_data, key=lambda a: a[0].area, reverse=True)
 
-        geo_data = [[pr, poly_coords, clr]for _, pr, poly_coords, clr in sorted_geo_data]
+        geo_data = [[name, popup, poly_coords, color]for _, name, popup, poly_coords, color in sorted_geo_data]
         context['geo_data'] = geo_data
         context['comments'] = Comment.objects.filter(order=self.object.pk)
+
+        # notified_provider_pks = SmsNotify.objects.filter(order=self.object.pk).values('provider')
+        # context['notified_providers'] = ProviderTable(Provider.objects.filter(pk__in=notified_provider_pks))
+        context['notified_providers'] = NotifiedProviders(SmsNotify.objects.filter(order=self.object.pk))
 
         return context
 
@@ -136,13 +158,29 @@ def shipments(request, status='all'):
 
 def add_comment_to_order(request, pk):
     order = get_object_or_404(Order, pk=pk)
+    author = User.objects.get(username=request.user)
     if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
-            comment.author = User.objects.get(username=request.user)
+            comment.author = author
             comment.order = order
             comment.save()
+
+            if 'manager' in author.groups.values_list('name', flat=True):
+                recipient_group = 'supplier'
+            else:
+                recipient_group = 'manager'
+
+            notify.send(sender=author,
+                        recipient=User.objects.filter(groups__name=recipient_group),
+                        verb='''Добавил(а) коментарий к заказу 
+                                <a href="{}">№{}</a>'''.format(
+                                    order.get_absolute_url(),
+                                    order.pk
+                                )
+                        )
+
             return redirect('order-detail', pk=order.pk)
     else:
         form = CommentForm()

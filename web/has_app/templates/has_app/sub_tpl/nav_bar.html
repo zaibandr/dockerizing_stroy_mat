@@ -4,6 +4,7 @@
 {% load notifications_tags %}
 {% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}
 
+
 <nav class="navbar navbar-default" role="navigation">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
@@ -19,20 +20,28 @@
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-            <li><a href="{% url 'orders' %}">Заказы</a></li>
-            <li><a href="{% url 'shipments' %}">Отгрузки</a></li>
-{#            <li class="dropdown">#}
-{#                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>#}
-{#                <ul class="dropdown-menu">#}
-{#                    <li><a href="#">Action</a></li>#}
-{#                    <li><a href="#">Another action</a></li>#}
-{#                    <li><a href="#">Something else here</a></li>#}
-{#                    <li class="divider"></li>#}
-{#                    <li><a href="#">Separated link</a></li>#}
-{#                    <li class="divider"></li>#}
-{#                    <li><a href="#">One more separated link</a></li>#}
-{#                </ul>#}
-{#            </li>#}
+          <li><a href="{% url 'orders' %}">Заказы</a></li>
+
+            {% if perms.order.can_add_order %}
+                <li><a href="{% url 'new_order_form' %}">Добавить заказ</a></li>
+            {% endif %}
+
+            <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Отгрузки <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="{% url 'shipments' %}">Отгрузки</a></li>
+
+                {% if perms.shipment.can_add_shipment %}
+                    <li><a href="{% url 'new_shipment_form' %}">Добавить отгрузку</a></li>
+                {% endif %}
+
+{#              <li><a href="#">Something else here</a></li>#}
+{#              <li class="divider"></li>#}
+{#              <li><a href="#">Separated link</a></li>#}
+{#              <li class="divider"></li>#}
+{#              <li><a href="#">One more separated link</a></li>#}
+            </ul>
+          </li>
         </ul>
         <div class="col-sm-4">
             <form class="navbar-form autocomplete-me" role="search" type="get" action="{% url 'search_form' %}">
@@ -54,15 +63,19 @@
                 </ul>
             </li>
 
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Welcome, {{ user.get_username }} </a>
-                <ul class="dropdown-menu">
-                    <li><a href="/admin/"><i class="icon-cog"></i> Admin panel</a></li>
-                    <li><a href="/help/support"><i class="icon-envelope"></i> Contact Support</a></li>
-                    <li class="divider"></li>
-                    <li><a href="{% url 'logout' %}"><i class="icon-off"></i> Logout</a></li>
-                </ul>
-            </li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Welcome, {{ user.get_username }} <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+
+                {% if user.is_staff %}
+                <li><a href="/admin/"><i class="icon-cog"></i> Admin panel</a></li>
+                {% endif %}
+
+                <li><a href="/help/support"><i class="icon-envelope"></i> Contact Support</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'logout' %}"><i class="icon-off"></i> Logout</a></li>
+            </ul>
+          </li>
         </ul>
       </div><!-- /.navbar-collapse -->
     </nav>

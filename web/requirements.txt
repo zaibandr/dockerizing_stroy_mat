@@ -14,3 +14,7 @@ shapely
 geopy
 django-leaflet
 django-geojson [field]
+
+django-notifications-hq
+
+django-debug-toolbar

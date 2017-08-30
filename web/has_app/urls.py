@@ -9,6 +9,8 @@ from .views import OrderDetailView, EditOrder, OrderUpdate
 from .views import ProviderDetailView
 from .views import new_shipment_form, EditShipment, shipments
 
+import notifications.urls
+
 
 urlpatterns = [
     url(r'^$', login_required(orders), name='home'),
@@ -38,11 +40,15 @@ urlpatterns = [
     url(r"^logout/$", auth_views.logout_then_login, name="logout"),
 
     url(r'^search/$', search_views.order_search_form, name='search_form'),
-    url(r'^autocomplete/$', search_views.autocomplete, name='autocomplete'),
+    url(r'^autocomplete_order_id/$', search_views.autocomplete_order_id, name='autocomplete_order_id'),
+    url(r'^autocomplete_order_address/$', search_views.autocomplete_order_address, name='autocomplete_order_address'),
+
 
     url(r'^filter$', filters_views.order_filter_list, name='order_filter'),
     url(r'^filterviews$', filters_views.FilteredOrderListView.as_view(), name='order_filter_views'),
 
     url(r'^shipments/$', login_required(shipments), name='shipments'),
     url(r'^orders/(?P<pk>[0-9]+)/add_comment/$', add_comment_to_order, name='add_comment_to_order'),
+
+    url('^inbox/notifications/', include(notifications.urls, namespace='notifications')),
 ]

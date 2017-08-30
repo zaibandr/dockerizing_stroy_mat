@@ -47,9 +47,15 @@ class Base(Configuration):
         'haystack',
         'leaflet',
         'djgeojson',
+
+        'notifications',
+
+        'debug_toolbar',
     ]
 
     MIDDLEWARE = [
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.common.CommonMiddleware',
@@ -162,8 +168,8 @@ class Prod(Base):
     HAYSTACK_CONNECTIONS = {
         'default': {
             'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-            'URL': '{}:{}'.format('194.67.215.206', '9200'),
-            'TIMEOUT': 60 * 5,
+            'URL': '{}:{}'.format(os.environ['ES_URL'], '9200'),
+            'TIMEOUT': 10,
             'INDEX_NAME': 'haystack',
             'INCLUDE_SPELLING': True,
         },
@@ -181,3 +187,5 @@ class Prod(Base):
         'MIN_ZOOM': 3,
         'MAX_ZOOM': 18,
     }
+
+    INTERNAL_IPS = ('127.0.0.1', '46.39.230.142',)
