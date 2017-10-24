@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap3 %}
+{% block title %}Добавить заказ{% endblock %}
+{% block content %}
+
+    <h1>Добавить заказ</h1>
+        <form action="{% url 'order:new_order_formset' %}" method="post" class="form-horizontal">
+            {% csrf_token %}
+            {% bootstrap_form form layout="horizontal"%}
+            <input type="hidden" name="extra" value="{{extra}}">
+            <fieldset>
+                {% for form in formset %}
+                    {% bootstrap_form form %}
+                    <hr>
+                {% endfor %}
+                <input class="btn btn-default" type="submit" name="action" value="+">
+            </fieldset>
+
+            {% buttons %}
+                {% buttons submit='Добавить' %}{% endbuttons %}
+            {% endbuttons %}
+
+        </form>
+
+
+    {% include "order_app/sub_tpl/select_picker.html" %}
+
+    {% include "order_app/sub_tpl/address_suggestion.html" %}
+
+
+{% endblock %}

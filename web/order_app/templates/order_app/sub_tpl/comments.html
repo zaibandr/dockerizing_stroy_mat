@@ -1,0 +1,37 @@
+<div class="page-header">
+    <h3><small class="pull-right">{{ comments|length }}</small> Комментарии </h3>
+</div>
+
+<div class="comments-list" style="border-bottom: 1px dotted #ccc;">
+{% for comment in comments %}
+       <div class="comment-item">
+           <div class="comment-control pull-right" style="padding: 5px">
+               {% if user == comment.author %}
+
+                    <a href="{% url 'order:edit_comment' pk=comment.pk%}"
+                       role="button"
+                       title="Изменить комментарий"
+                       class="btn btn-default btn-xs">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                    </a>
+
+               {% endif %}
+           </div>
+
+           <div class="comment-time pull-right" style="padding: 5px">
+               <small>{{ comment.time_created|timesince:now }} назад</small>
+           </div>
+
+           <div class="comment-head">
+               <h4>{{ comment.author }}</h4>
+           </div>
+
+           <div class="comment-body">
+               {{ comment.text|linebreaks }}
+           </div>
+       </div>
+
+{% empty %}
+    <p>Нет коментариев :(</p>
+{% endfor %}
+</div>

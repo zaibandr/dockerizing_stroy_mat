@@ -1,0 +1,90 @@
+{% load static %}
+<script src="{% static 'notifications/notify.js' %}" type="text/javascript"></script>
+
+{% load notifications_tags %}
+{% notifications_unread as unread_count %}
+{% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}
+
+<nav class="navbar navbar-default" role="navigation">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="{% url 'order:order_list' %}">Has app</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+            <li><a href="{% url 'order:order_list' %}">Заказы</a></li>
+            <li><a href="{% url 'shipment:shipments_list' %}">Отгрузки</a></li>
+{#            <li class="dropdown">#}
+{#                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>#}
+{#                <ul class="dropdown-menu">#}
+{#                    <li><a href="#">Action</a></li>#}
+{#                    <li><a href="#">Another action</a></li>#}
+{#                    <li><a href="#">Something else here</a></li>#}
+{#                    <li class="divider"></li>#}
+{#                    <li><a href="#">Separated link</a></li>#}
+{#                    <li class="divider"></li>#}
+{#                    <li><a href="#">One more separated link</a></li>#}
+{#                </ul>#}
+{#            </li>#}
+        </ul>
+        <div class="col-sm-4">
+            <form class="navbar-form autocomplete-me" role="search" type="get" action="{% url 'order:order_search_form' %}">
+                <div class="input-group">
+                    <input type="search" id="search" name="q" class="form-control" placeholder="Search for..." title="Поиск">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                        <a href="{% url 'order:order_filter_views' %}" class="btn btn-default" role="button" title="Расширенный поиск"><i class="glyphicon glyphicon-cog"></i></a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            {% if user.is_superuser %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">data</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'data:provider_orders' %}">Заказы</a></li>
+                        <li><a href="{% url 'data:all_order_on_map' %}">Заказы на карте</a></li>
+                        <li><a href="{% url 'data:orders_per_day' %}">Заказов в день</a></li>
+                        <li><a href="{% url 'data:overage_complete_time' %}">Среднее время обработки</a></li>
+                    </ul>
+                </li>
+            {% endif %}
+
+
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    {% if unread_count %}
+                        <span style="color:#cb0500;">Активность</span> {% live_notify_badge classes="badge badge-danger" %}
+                    {% else %}
+                        <span style="color:#468847;">Активность</span> {% live_notify_badge classes="badge badge-success" %}
+                    {% endif %}
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="{% url 'notifications:unread' %}">Непрочитанные {% live_notify_badge classes="badge" %}</a></li>
+                    <li><a href="{% url 'notifications:all' %}">Все</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Welcome, {{ user.get_username }} </a>
+                <ul class="dropdown-menu">
+                    <li><a href="/admin/"><i class="icon-cog"></i> Admin panel</a></li>
+                    <li><a href="/help/support"><i class="icon-envelope"></i> Contact Support</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{% url 'logout' %}"><i class="icon-off"></i> Logout</a></li>
+                </ul>
+            </li>
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </nav>
+
+    {% include "order_app/sub_tpl/autocomplete.html" %}

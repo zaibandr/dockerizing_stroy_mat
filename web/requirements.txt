@@ -18,3 +18,22 @@ django-geojson [field]
 django-notifications-hq
 
 django-debug-toolbar
+
+# excel
+xlrd
+tablib
+
+# кэширование
+redis
+django-cacheops
+
+# django-grappelli
+
+boto
+django-ses
+
+#data
+numpy
+matplotlib
+scipy
+sklearn

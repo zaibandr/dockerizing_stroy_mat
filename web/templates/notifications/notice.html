@@ -1,0 +1,32 @@
+{% load notifications_tags %}
+
+<div class="alert alert-block alert-{{ notice.level }}">
+    {% if notice.unread %}
+        <a class="glyphicon glyphicon-eye-open" href="{% url 'notifications:mark_as_read' notice.slug %}" title="Пометить как прочитанное">
+            <i class="icon-close"></i>
+        </a>
+    {% else %}
+        <a class="glyphicon glyphicon-eye-close" href="{% url 'notifications:mark_as_unread' notice.slug %}" title="Пометить как непрочитанное">
+            <i class="icon-close"></i>
+        </a>
+    {% endif %}
+
+  <h4>
+    <i class="icon-mail{% if notice.unread %}-alt{% endif %}"></i>
+    {{ notice.actor }} 
+    {{ notice.verb|safe }}
+    {% if notice.target %}
+      of {{ notice.target }}
+    {% endif %}
+  </h4>
+  
+  <p>{{ notice.timesince }} назад</p>
+  
+  <p>{{ notice.description|linebreaksbr }}</p>
+  
+  <div class="notice-actions">
+    {% for action in notice.data.actions %}
+      <a class="btn" href="{{ action.href }}">{{ action.title }}</a>
+    {% endfor %}
+  </div>
+</div>

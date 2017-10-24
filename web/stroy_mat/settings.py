@@ -1,6 +1,33 @@
 from configurations import Configuration, values
 import os
 
+import sys
+import logging
+
+from django.core.management.color import color_style
+
+
+class DjangoColorsFormatter(logging.Formatter):
+    def __init__(self, *args, **kwargs):
+        super(DjangoColorsFormatter, self).__init__(*args, **kwargs)
+        self.style = self.configure_style(color_style())
+
+    def configure_style(self, style):
+        style.DEBUG = style.HTTP_NOT_MODIFIED
+        style.INFO = style.HTTP_INFO
+        style.WARNING = style.HTTP_NOT_FOUND
+        style.ERROR = style.ERROR
+        style.CRITICAL = style.HTTP_SERVER_ERROR
+        return style
+
+    def format(self, record):
+        message = logging.Formatter.format(self, record)
+        if sys.version_info[0] < 3:
+            if isinstance(message, str):
+                message = message.encode('utf-8')
+        colorizer = getattr(self.style, record.levelname, self.style.HTTP_SUCCESS)
+        return colorizer(message)
+
 
 class Base(Configuration):
     # Django settings for test_project project.
@@ -10,8 +37,6 @@ class Base(Configuration):
     ADMINS = (
         ('panagoa', 'panagoa@ya.ru'),
     )
-
-    EMAIL_URL = values.EmailURLValue('console://', environ=True)
 
     MANAGERS = ADMINS
 
@@ -24,20 +49,31 @@ class Base(Configuration):
     SECRET_KEY = '37xxs(x=2xntw=mmdde2_nj^+j=f0rw&y=*#i+&jh&9t5safe%'
 
     # SECURITY WARNING: don't run with debug turned on in production!
-    DEBUG = True
+    # DEBUG = True
 
     ALLOWED_HOSTS = ['*']
 
     # Application definition
 
     INSTALLED_APPS = [
+        'order_app.apps.OrderAppConfig',
+        'provider_app.apps.ProviderAppConfig',
+        'shipment_app.apps.ShipmentAppConfig',
+        'customer_app.apps.CustomerAppConfig',
+
+        'discharge_app.apps.DischargeAppConfig',
+        'data_app.apps.DataAppConfig',
+        # 'grappelli',
         'django.contrib.admin',
         'django.contrib.auth',
         'django.contrib.contenttypes',
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
-        'has_app.apps.HasAppConfig',
+        'debug_toolbar',
+
+        #'has_app.apps.HasAppConfig',
+
 
         'django_tables2',
         'bootstrap3',
@@ -50,14 +86,14 @@ class Base(Configuration):
 
         'notifications',
 
-        'debug_toolbar',
+        'cacheops'
+
     ]
 
     MIDDLEWARE = [
-        'debug_toolbar.middleware.DebugToolbarMiddleware',
-
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
         'django.middleware.common.CommonMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -139,7 +175,19 @@ class Dev(Base):
 
 
 class Prod(Base):
-    DEBUG = True
+    DEBUG = False
+
+    # EMAIL_BACKEND = 'django_ses.SESBackend'
+    #
+    # # These are optional -- if they're set as environment variables they won't
+    # # need to be set here as well
+    # AWS_SES_ACCESS_KEY_ID = 'AKIAJG66MUMB7Y46CE7A'
+    # AWS_SES_SECRET_ACCESS_KEY = 'AuuBrTZiLranxcWlPxl3J+4x8iOiiwhuw0EG2KsCsoHq'
+    #
+    # # Additionally, if you are not using the default AWS region of us-east-1,
+    # # you need to specify a region, like so:
+    # AWS_SES_REGION_NAME = 'eu-west-1'
+    # AWS_SES_REGION_ENDPOINT = 'email-smtp.eu-west-1.amazonaws.com'
 
     DATABASES = {
         'default': {
@@ -188,4 +236,83 @@ class Prod(Base):
         'MAX_ZOOM': 18,
     }
 
-    INTERNAL_IPS = ('127.0.0.1', '46.39.230.142',)
+    DEBUG_TOOLBAR_PANELS = [
+        'debug_toolbar.panels.versions.VersionsPanel',
+        'debug_toolbar.panels.timer.TimerPanel',
+        'debug_toolbar.panels.settings.SettingsPanel',
+        'debug_toolbar.panels.headers.HeadersPanel',
+        'debug_toolbar.panels.request.RequestPanel',
+        'debug_toolbar.panels.sql.SQLPanel',
+        'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+        'debug_toolbar.panels.templates.TemplatesPanel',
+        'debug_toolbar.panels.cache.CachePanel',
+        'debug_toolbar.panels.signals.SignalsPanel',
+        'debug_toolbar.panels.logging.LoggingPanel',
+        'debug_toolbar.panels.redirects.RedirectsPanel',
+    ]
+
+    DEBUG_TOOLBAR_CONFIG = {
+        'INTERCEPT_REDIRECTS': False,
+        'SHOW_TEMPLATE_CONTEXT': True,
+    }
+
+    INTERNAL_IPS = ('127.0.0.1', '46.39.230.142', '46.39.230.119', '188.120.229.184', '172.17.0.6')
+
+    # redis and cacheops
+    CACHEOPS_REDIS = {
+        'host': os.environ['REDIS_HOST'],  # redis-server is on same machine
+        'port': 6379,  # default redis port
+        'db': 1,  # SELECT non-default redis database
+        # using separate redis db or redis instance
+        # is highly recommended
+
+        'password': 'redis',  # optional
+    }
+
+    CACHEOPS_DEFAULTS = {
+        'timeout': 60 * 60
+    }
+
+    CACHEOPS = {
+        'auth.user': {'ops': 'get', 'timeout': 60 * 15},
+        '*.*': {},
+        #'*.*': {'ops': 'all', 'timeout': 60 * 60 * 2},
+    }
+
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'colored': {
+                '()': DjangoColorsFormatter,
+                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
+                'datefmt': '%d/%b/%Y %H:%M:%S',
+            },
+        },
+        'handlers': {
+            'console': {
+                'level': 'DEBUG',
+                'class': 'logging.StreamHandler',
+                'formatter': 'colored',
+            },
+
+            'file': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': os.path.join(BASE_DIR, 'debug.log'),
+            },
+        },
+        'loggers': {
+            # 'django.db.backends': {
+            #     'level': 'DEBUG',
+            #     'handlers': ['file'],
+            # },
+
+            'stroy_mat': {
+                'handlers': ['console'],
+                'propagate': True,
+                'level': 'INFO',
+            },
+        },
+
+    }

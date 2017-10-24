@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap3 %}
+{% block title %}Добавить заказ{% endblock %}
+
+{% block content %}
+
+    <h1>Добавить заказ</h1>
+        <form action="{% url 'order:new_order_form' %}" method="post" class="form-horizontal">
+            {% csrf_token %}
+            {% for field in form.visible_fields %}
+                {% bootstrap_field field field_class='col-md-6' label_class='col-md-6'%}
+            {% endfor %}
+
+            <button type="button" class="btn btn-default btn-sm" id="plus2">
+              <span class="glyphicon glyphicon-plus"></span>
+            </button>
+
+            {% buttons %}
+                {% buttons submit='Добавить' layout='horizontal' %}{% endbuttons %}
+            {% endbuttons %}
+
+        </form>
+    <script>
+    $(document).ready(function(){
+        $("#plus2").click(function(){
+            $("#id_product2").show();
+            $("#id_volume2").show();
+            $("#plus2").attr("id", "plus3")
+        });
+
+    });
+    </script>
+
+
+    {% include "order_app/sub_tpl/select_picker.html" %}
+
+    {% include "order_app/sub_tpl/address_suggestion.html" %}
+
+{% endblock %}

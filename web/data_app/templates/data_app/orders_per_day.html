@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{#    {{ days|safe }}#}
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+    <div id="orders-per-day" style="min-width: 310px; height: 800px; margin: 0 auto"></div>
+    <script type="text/javascript">
+    Highcharts.chart('orders-per-day', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Заказы по дням'
+        },
+        subtitle: {
+            text: ''
+        },
+        xAxis: {
+            categories: {{ categories|safe }},
+            labels: {
+                formatter: function () {
+                    var date = this.value;
+                    return '<a href="/filterviews?date_from_to_range_0='+ date + '&date_from_to_range_1='+ date + '">' + date + '</a>'
+                },
+                useHTML: true
+            },
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Заказы'
+            }
+        },
+
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">Дата: {point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0"> <a href="/filterviews?date_from_to_range_0=15.09.2017&date_from_to_range_1=15.09.2017">{series.name}</a>: </td>' +
+                '<td style="padding:0"><b>{point.y}</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'Заказы',
+            data: {{ data|safe }}
+        }
+        ]
+    });
+    </script>
+{% endblock %}

@@ -6,6 +6,7 @@ web:
   volumes:
     - webdata_app:/usr/src/web
     - webdata_static:/usr/src/web/static
+    - webdata_uploads:/usr/src/web/uploads
   env_file: prod.env
   environment:
     DEBUG: 'true'
@@ -43,3 +44,14 @@ elastic:
     - "9300:9300"
   volumes:
     - esdata:/usr/share/elasticsearch/data
+
+
+redis:
+  restart: always
+  image: redis:latest
+  mem_limit: 400m
+  command: redis-server --requirepass redis
+  ports:
+    - "6379:6379"
+  volumes:
+    - redisdata:/data

@@ -1,0 +1,49 @@
+<script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.min.js"></script>
+{#TODO Multiple Datasets#}
+{#https://twitter.github.io/typeahead.js/examples/#}
+{#Multiple Datasets#}
+<script type="text/javascript">
+var Order = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    remote: {
+    url: '{% url 'order:autocomplete_order_id' %}?q=%QUERY',
+    wildcard: '%QUERY'
+  }
+});
+
+var Order_adress = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    remote: {
+    url: '{% url 'order:autocomplete_order_address' %}?q=%QUERY',
+    wildcard: '%QUERY'
+  }
+});
+
+$('#search').typeahead({
+        hint: true,
+        highlight: true
+},
+{
+  name: 'order',
+  display: 'order',
+  limit: 7,
+  source: Order,
+  templates: {
+      header: '<h3 class="order-id">Заказы</h3>',
+      suggestion: function(data) {
+          return '<p><a href="/order/detail/' + data.order + '/">Заказ №' + data.order + '</a><p>';
+      }
+  }
+},
+{
+  name: 'address',
+  display: 'address',
+  limit: 6,
+  source: Order_adress,
+  templates: {
+    header: '<h3 class="order-address">Адреса</h3>'
+  }
+});
+</script>

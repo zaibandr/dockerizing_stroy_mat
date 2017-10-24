@@ -1,0 +1,6 @@
+{{ object.pk }}
+{{ object.name }}
+{{ object.contact_name }}
+{% for product in object.products.all %}
+    {{ product.name}}
+{% endfor %}

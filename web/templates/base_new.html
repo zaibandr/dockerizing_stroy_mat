@@ -1,0 +1,49 @@
+{% load static %}
+{% load bootstrap3 %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    {% block meta %}
+    {% endblock %}
+
+    {% bootstrap_css %}
+    {% include "autocomplete_style.html" %}
+
+    {% block style %}
+
+    {% endblock %}
+
+    <title>
+        {% block title %}
+        {% endblock %}
+    </title>
+
+</head>
+<body>
+    <script src="{% static 'notifications/notify.js' %}" type="text/javascript"></script>
+
+    {% block navbar %}
+        {% include "nav_bar.html" %}
+    {% endblock %}
+
+    <div class="container col-xs-12 col-sm-12 col-md-12 col-lg-10 col-lg-offset-1">
+
+        {% block content %}
+
+        {% endblock %}
+
+    </div>
+
+
+    <footer class="footer">
+    {% block footer %}
+        <div class="container" style="height: 80px"></div>
+    {% endblock %}
+    </footer>
+
+    {% bootstrap_javascript %}
+</body>
+</html>

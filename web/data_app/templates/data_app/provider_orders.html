@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+    <div id="provider-orders" style="min-width: 310px; height: 800px; margin: 0 auto"></div>
+    <script type="text/javascript">
+        Highcharts.chart('provider-orders', {
+
+        chart: {
+            type: 'column'
+        },
+
+        title: {
+            text: 'Заказы по поставщика'
+        },
+
+        xAxis: {
+            categories: {{ products|safe }}
+        },
+
+        yAxis: {
+            allowDecimals: false,
+            min: 0,
+            title: {
+                text: 'Количесвто заказов'
+            }
+        },
+
+        tooltip: {
+            formatter: function () {
+                return '<b>' + this.x + '</b><br/>' +
+                    this.series.name + ': ' + this.y + '<br/>' +
+                    'Всего: ' + this.point.stackTotal;
+            }
+        },
+
+        plotOptions: {
+            column: {
+                stacking: 'normal'
+            }
+        },
+
+        series: {{ series|safe }}
+    });
+    </script>
+
+
+{% endblock %}

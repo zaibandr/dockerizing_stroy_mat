@@ -1,0 +1,47 @@
+{% load static %}
+{% load bootstrap3 %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    {% bootstrap_css %}
+
+
+    <link rel="stylesheet" href="{% static 'autocomplete.css' %}">
+    <link rel="stylesheet" href="{% static 'main.css' %}">
+
+    <title>
+        {% block title %}
+
+        {% endblock title%}
+    </title>
+
+</head>
+<body>
+    <script data-require="jquery@2.2.4" data-semver="2.2.4" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+    {% if user.is_staff %}
+        {% include "order_app/sub_tpl/supplier/nav_bar.html" %}
+    {% else %}
+        {% include "order_app/sub_tpl/manager/nav_bar.html" %}
+    {% endif %}
+
+    <div class="row center-block">
+    <div class="container col-xs-12 col-sm-12 col-md-12 col-lg-10 col-lg-offset-1">
+
+    {% block content %}
+    
+    {% endblock %}
+
+    </div>
+    </div>
+    <footer class="footer">
+      <div class="container" style="height: 80px">
+
+      </div>
+    </footer>
+    {% bootstrap_javascript %}
+</body>
+</html>
