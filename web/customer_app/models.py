@@ -2,18 +2,13 @@ from django.urls import reverse
 from django.db import models
 import datetime
 
+from core.models import ContactNameModel, DescriptionModel, PhoneNumberModel, BalanceModel
 
-class Customer(models.Model):
 
-    name = models.CharField(max_length=100, verbose_name='Название', db_index=True)
-    contact_name = models.TextField(max_length=400, verbose_name='Контактное лицо')
-    description = models.TextField(max_length=1000, blank=True)
+class Customer(ContactNameModel, DescriptionModel, PhoneNumberModel, BalanceModel, models.Model):
 
-    # stamp = models.BooleanField(default=False, verbose_name='Штамп/Печать')
-    # trusted_name = models.TextField(max_length=400, verbose_name='Доверенные лица')
-
+    name = models.CharField(max_length=100, verbose_name='Имя', db_index=True)
     individual_person = models.BooleanField(default=False, verbose_name='Физическое лицо')
-    balance = models.IntegerField(editable=False, default=0, verbose_name='Баланс')
 
     class Meta:
         verbose_name = 'Заказчик'
@@ -23,13 +18,7 @@ class Customer(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('customer-detail', kwargs={'pk': self.pk})
-
-    def balance_add(self, amount):
-        self.balance += int(amount)
-
-    def balance_take_down(self, amount):
-        self.balance -= int(amount)
+        return reverse('customer_detail', kwargs={'pk': self.pk})
 
 
 class CreditPayment(models.Model):

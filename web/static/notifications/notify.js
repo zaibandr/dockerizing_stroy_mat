@@ -56,7 +56,7 @@ function fetch_api_data() {
                     consecutive_misfires++;
                 }
             }
-        })
+        });
         r.open("GET", notify_api_url+'?max='+notify_fetch_count, true);
         r.send();
     }

@@ -8,7 +8,7 @@
            <div class="comment-control pull-right" style="padding: 5px">
                {% if user == comment.author %}
 
-                    <a href="{% url 'order:edit_comment' pk=comment.pk%}"
+                    <a href="{% url 'comments:edit_comment' pk=comment.pk%}"
                        role="button"
                        title="Изменить комментарий"
                        class="btn btn-default btn-xs">

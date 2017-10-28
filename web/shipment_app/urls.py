@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 
 from .views import new_shipment_form, EditShipment, shipments, ShipmentDetailView
 

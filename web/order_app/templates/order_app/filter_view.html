@@ -60,11 +60,11 @@
                 var marker = L.marker(
                     [{{ order.latitude|stringformat:"f" }}, {{ order.longitude|stringformat:"f"}}],
                     {% if order.status == 'CMPLTD' %}
-                        {icon: greenIcon}
+                        {icon: greenIcon};
                     {% else %}
-                        {icon: redIcon}
+                        {redIcon}
                     {% endif %}
-                    );
+                )
                 marker.addTo(map).bindPopup('<a href="/order/detail/'+'{{ order.pk }}'+'/" title="Перейти на станицу заказа">'+'{{ order.address }}'+'</a><hr>'+
                     '{{ order.product.name }} - '+'{{ order.provider.name }}<hr>'+
                     'Объем: {{ order.volume }} - '+'{{ order.cost }}р');

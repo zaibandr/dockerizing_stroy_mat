@@ -3,6 +3,10 @@ web:
   build: ./web
   expose:
     - "8000"
+  links:
+    - postgres:postgres
+    - elastic:elastic
+    - redis:redis
   volumes:
     - webdata_app:/usr/src/web
     - webdata_static:/usr/src/web/static

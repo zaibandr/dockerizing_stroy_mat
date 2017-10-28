@@ -1,8 +1,8 @@
 import django_filters
-from django_filters import widgets
-from .models import Provider, Product
-
 from django.forms import Select
+
+from product_app.models import Product
+from .models import Provider
 
 
 class MySelect(Select):

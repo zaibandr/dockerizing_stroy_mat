@@ -1,4 +1,5 @@
 from haystack import indexes
+
 from .models import Order
 
 
@@ -10,9 +11,8 @@ class OrderIndex(indexes.SearchIndex, indexes.Indexable):
     name = indexes.CharField(model_attr='name')
 
     # We add this for autocomplete.
-    address = indexes.CharField(model_attr='address')
-    content_auto = indexes.EdgeNgramField(model_attr='address')
-    time_created = indexes.DateTimeField(model_attr='time_created')
+    address = indexes.EdgeNgramField(model_attr='address')
+    created = indexes.DateTimeField(model_attr='created')
 
     suggestions = indexes.FacetCharField()
 

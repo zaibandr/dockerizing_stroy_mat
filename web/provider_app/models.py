@@ -1,37 +1,38 @@
-from django.urls import reverse
 from django.db import models
-from djgeojson.fields import PolygonField
+from django.urls import reverse
+
+from product_app.models import ProductGeo
+from core.models import BalanceModel, DescriptionModel, MailModel, PhoneNumberModel, ContactNameModel
 
 
-class Product(models.Model):
-    name = models.CharField(max_length=300, verbose_name='Наименование', db_index=True)
+class ProviderCanDeliveryManager(models.Manager):
+    use_for_related_fields = True
 
-    class Meta:
-        verbose_name = "Наименование"
-        verbose_name_plural = "Наименования"
-        ordering = ['name']
+    def can_delivery(self, point_longitude: float, point_latitude: float, product_id: int):
+        from shapely.geometry import Polygon, Point
+        from provider_app.models import Provider
 
-    def __str__(self):
-        return self.name
+        """TODO optimize with haystack spatial search (polygon)"""
+        can_delivery_providers = []
+        for provider in Provider.objects.filter(regions__products__id__exact=product_id):
+            for region in provider.regions.all():
+                polygon = Polygon(region.delivery_region['coordinates'][0])
+                if polygon.contains(Point(point_longitude, point_latitude)):
+                    can_delivery_providers.append(provider)
+        return can_delivery_providers
 
 
-class Provider(models.Model):
+class Provider(PhoneNumberModel, ContactNameModel, DescriptionModel, BalanceModel, MailModel, models.Model):
 
-    name = models.CharField(max_length=50, verbose_name='Имя', db_index=True)
-    contact_name = models.TextField(max_length=400, verbose_name='Контактное лицо')
-    phone_number = models.CharField(max_length=12, null=True, verbose_name='Телефон')
-    mail_1 = models.EmailField(blank=True, null=True, verbose_name='mail_1')
-    mail_2 = models.EmailField(blank=True, null=True, verbose_name='mail_2')
+    name = models.CharField(max_length=50, verbose_name='Поставщик', db_index=True)
 
-    products = models.ManyToManyField(Product, verbose_name='Продукция')
-    hidden = models.BooleanField(blank=True, default=False, verbose_name='Скрывать поставщика')
-    # region = models.PolygonField(verbose_name='Регион')
-    geom = PolygonField(default='[]')
-
-    balance = models.IntegerField(editable=False, default=0, verbose_name='Баланс')
+    hidden = models.BooleanField(blank=True, default=False, verbose_name='Скрывать')
+    regions = models.ManyToManyField(ProductGeo)
 
     orders_count = models.IntegerField(editable=False, default=0, verbose_name='КЗ', db_index=True)
     shipments_count = models.IntegerField(editable=False, default=0, verbose_name='Количесвто отгрузок', db_index=True)
+
+    objects = ProviderCanDeliveryManager()
 
     class Meta:
         verbose_name = 'Поставщик'
@@ -43,9 +44,3 @@ class Provider(models.Model):
 
     def get_absolute_url(self):
         return reverse('provider:provider_detail', kwargs={'pk': self.pk})
-
-    def balance_add(self, amount):
-        self.balance += int(amount)
-
-    def balance_take_down(self, amount):
-        self.balance -= int(amount)

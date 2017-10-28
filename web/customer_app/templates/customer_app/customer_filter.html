@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load render_table from django_tables2 %}
+{% load bootstrap3 %}
+
+{% block content %}
+   <div class="container col-md-12">
+    <form action="" method="get" class="form-horizontal">
+{#        {% for field in filter.form %}#}
+{#            {% bootstrap_field field layout='horizontal'%}#}
+{#        {% endfor %}#}
+        {% bootstrap_form filter.form layout='horizontal' %}
+
+        {% buttons %}
+            {% buttons submit='Найти' layout='horizontal'%}{% endbuttons %}
+        {% endbuttons %}
+    </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css" />
+
+
+    <script type="text/javascript">
+        $('.selectpicker').selectpicker({
+          });
+    </script>
+    <br>
+    <hr>
+    <div class="container col-md-12">
+        {% render_table table %}
+    </div>
+
+{% endblock %}

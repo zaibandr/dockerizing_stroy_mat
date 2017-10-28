@@ -1,19 +1,14 @@
 from django.shortcuts import render
 from django.views.generic.detail import DetailView
+from django_filters.views import FilterView
+from django_tables2 import RequestConfig
+from django_tables2 import SingleTableView
 
 from order_app.models import Order
 from order_app.tables import SimilarOrderTable as ProviderOrderTable
-from .models import Provider, Product
-
-
-from django_tables2 import RequestConfig
-from .tables import ProviderTable
-
-
-from django_filters.views import FilterView
-from django_tables2 import SingleTableView
 from .filters import ProviderFilter
-from order_app.filters import OrderFilter
+from .models import Provider
+from .tables import ProviderTable
 
 
 class ProviderDetailView(DetailView):

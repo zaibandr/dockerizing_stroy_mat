@@ -1,12 +1,16 @@
 import django_tables2 as tables
-from django.utils.html import format_html, mark_safe
-from .models import Order
+from django.urls import reverse
+from django.utils.html import format_html
 from notifications.models import Notification
+
+from .models import Order
 
 
 class ProductColumn(tables.Column):
     def render(self, value, record):
-        return format_html('<a href="/order/detail/{}/"><p class="text-left">{}</p></a>', record.pk, value)
+        return format_html('<a href="{}"><p class="text-left">{}</p></a>',
+                           reverse('order:order_detail', kwargs={'pk': record.pk}),
+                           value)
 
 
 class TimeColumn(tables.Column):
@@ -35,11 +39,11 @@ class OrdersTable(tables.Table):
 
     class Meta:
         model = Order
-        order_by = '-time_updated'
+        order_by = '-modified'
 
         # add class="paleblue" to <table> tag
         fields = ('id', 'product', 'volume', 'status', 'phone_number',
-                  'address', 'manager', 'time_created', 'time_updated')
+                  'address', 'author', 'created', 'modified')
 
         row_attrs = {
             'class': lambda
@@ -52,7 +56,9 @@ class SimilarOrderTable(tables.Table):
     provider = tables.Column(verbose_name='Поставщик')
 
     def render_provider(self, record, value):
-        return format_html('<a href="/provider/detail/{}/"><p class="text-left">{}</p></a>', record.provider_id, value)
+        return format_html('<a href="{}/"><p class="text-left">{}</p></a>',
+                           reverse('provider:provider_detail', kwargs={'pk': record.provider_id}),
+                           value)
 
     class Meta:
         model = Order

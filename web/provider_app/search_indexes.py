@@ -1,4 +1,5 @@
 from haystack import indexes
+
 from .models import Provider
 
 
@@ -7,12 +8,12 @@ class ProviderIndex(indexes.SearchIndex, indexes.Indexable):
 
     name = indexes.CharField(model_attr='name')
     contact_name = indexes.CharField(model_attr='contact_name')
-    phone_number = indexes.CharField(model_attr='phone_number')
+    # phone_number = indexes.CharField(model_attr='phone_number')
 
-    products = indexes.MultiValueField()
-
-    def prepare_products(self, obj):
-        return [product.name for product in obj.products.all()]
+    # products = indexes.MultiValueField()
+    #
+    # def prepare_products(self, obj):
+    #     return [product.name for product in obj.products.all()]
 
     # def prepare(self, obj):
     #     prepared_data = super(ProviderIndex, self).prepare(obj)

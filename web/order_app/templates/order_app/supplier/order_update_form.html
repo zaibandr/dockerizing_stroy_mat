@@ -6,7 +6,7 @@
 {% block content %}
     <h1>Обновить заказ</h1>
 
-    {% include "order_app/sub_tpl/order_info.html" %}
+    {% include "order_app/sub_tpl/_order_info.html" %}
 
     <hr>
     <form action="{% url 'order:order_update' pk=order.pk%}" method="post" class="form">
@@ -23,6 +23,6 @@
 
     </form>
 
-    {% include "order_app/sub_tpl/select_picker.html" %}
+    {% include "core/_select_picker.html" %}
 
 {% endblock %}

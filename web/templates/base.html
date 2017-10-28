@@ -23,9 +23,9 @@
     <script data-require="jquery@2.2.4" data-semver="2.2.4" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 
     {% if user.is_staff %}
-        {% include "order_app/sub_tpl/supplier/nav_bar.html" %}
+        {% include "order_app/sub_tpl/supplier/_nav_bar.html" %}
     {% else %}
-        {% include "order_app/sub_tpl/manager/nav_bar.html" %}
+        {% include "order_app/sub_tpl/manager/_nav_bar.html" %}
     {% endif %}
 
     <div class="row center-block">

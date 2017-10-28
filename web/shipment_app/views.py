@@ -1,13 +1,12 @@
-from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-
-from django.views.generic.edit import UpdateView
+from django.contrib.auth.models import User
+from django.shortcuts import render, redirect
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import UpdateView
 from django_tables2 import RequestConfig
 
-from django.contrib.auth.models import User
-from .models import Shipment
 from .forms import NewShipmentForm, EditShipmentForm
+from .models import Shipment
 from .tables import ShipmentTable
 
 

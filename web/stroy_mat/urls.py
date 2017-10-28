@@ -13,7 +13,7 @@ urlpatterns = [
     url(r"^logout/$", auth_views.logout_then_login, name="logout"),
     # url(r'^', include('has_app.urls')),
 
-    url(r'^$', orders, name='main'),
+    # url(r'^$', orders, name='main'),
     url(r'^order/', include('order_app.urls', namespace='order', app_name='order_app'), name='order'),
     url(r'^provider/', include('provider_app.urls', namespace='provider', app_name='provider_app'), name='provider'),
     url(r'^shipment/', include('shipment_app.urls', namespace='shipment', app_name='shipment_app'), name='shipment'),
@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^discharge/', include('discharge_app.urls'), name='discharge'),
 
     url(r'^inbox/notifications/', include(notifications.urls, namespace='notifications')),
+    url(r'^comments/', include('comment_app.urls', namespace='comments')),
 ]
 
 if 'debug_toolbar' in Prod.INSTALLED_APPS:

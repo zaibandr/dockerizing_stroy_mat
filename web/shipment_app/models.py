@@ -1,8 +1,8 @@
-from django.urls import reverse
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+from django.urls import reverse
 
-from order_app.models import Product
+from product_app.models import Product
 from provider_app.models import Provider
 
 

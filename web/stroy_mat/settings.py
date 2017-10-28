@@ -56,13 +56,18 @@ class Base(Configuration):
     # Application definition
 
     INSTALLED_APPS = [
-        'order_app.apps.OrderAppConfig',
-        'provider_app.apps.ProviderAppConfig',
-        'shipment_app.apps.ShipmentAppConfig',
-        'customer_app.apps.CustomerAppConfig',
+        'core',
+        'order_app',
+        'shipment_app',
+        'smsnotify_app',
+        'comment_app',
+        'provider_app',
+        'product_app',
+        'customer_app',
 
-        'discharge_app.apps.DischargeAppConfig',
-        'data_app.apps.DataAppConfig',
+        'discharge_app',
+        'data_app',
+
         # 'grappelli',
         'django.contrib.admin',
         'django.contrib.auth',
@@ -71,9 +76,6 @@ class Base(Configuration):
         'django.contrib.messages',
         'django.contrib.staticfiles',
         'debug_toolbar',
-
-        #'has_app.apps.HasAppConfig',
-
 
         'django_tables2',
         'bootstrap3',
@@ -87,7 +89,6 @@ class Base(Configuration):
         'notifications',
 
         'cacheops'
-
     ]
 
     MIDDLEWARE = [
@@ -175,7 +176,7 @@ class Dev(Base):
 
 
 class Prod(Base):
-    DEBUG = False
+    DEBUG = True
 
     # EMAIL_BACKEND = 'django_ses.SESBackend'
     #

@@ -15,9 +15,9 @@
     </div>
 
     {% if user.is_staff %}
-        {% include "order_app/sub_tpl/supplier/order_detail.html" %}
+        {% include "order_app/sub_tpl/supplier/_order_detail.html" %}
     {% else %}
-        {% include "order_app/sub_tpl/manager/order_detail.html" %}
+        {% include "order_app/sub_tpl/manager/_order_detail.html" %}
     {% endif %}
 
 {% endblock %}

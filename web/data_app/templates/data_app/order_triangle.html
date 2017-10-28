@@ -48,9 +48,9 @@
             var marker = L.marker(
                 [{{ o.latitude|stringformat:"f" }}, {{ o.longitude|stringformat:"f"}}],
                 {% if o.status == 'CMPLTD' %}
-                    {icon: greenIcon}
+                    {icon: greenIcon};
                 {% else %}
-                    {icon: redIcon}
+                    {redIcon}
                 {% endif %}
 
                 ).addTo(map);
@@ -61,7 +61,7 @@
 
 
         {% for poly, name, popup in triangles %}
-            var {{ name }} = L.polygon({{ poly|safe}}, {
+            var {{ name }} =; L.polygon({{ poly|safe}}, {
                 color: 'red',
                 fillColor: 'red',
                 fillOpacity: 0

@@ -15,35 +15,19 @@
         window.addEventListener("map:init", function (e) {
             var map = e.detail.map;
 
-            var greenIcon = new L.Icon({
-              iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-              iconSize: [25, 41],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
-              shadowSize: [41, 41]
-            });
-
-            var redIcon = new L.Icon({
-              iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-              iconSize: [25, 41],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
-              shadowSize: [41, 41]
-            });
+            {% include "core/_leaflet_icons.html" %}
 
             {% for o in all_order %}
                 var marker = L.marker(
                     [{{ o.latitude|stringformat:"f" }}, {{ o.longitude|stringformat:"f"}}],
                     {% if o.status == 'CMPLTD' %}
-                        {icon: greenIcon}
+                        {icon: greenIcon};
                     {% else %}
-                        {icon: redIcon}
+                        {redIcon}
                     {% endif %}
 
                     ).addTo(map);
-                marker.bindPopup('<a href="/order/detail/'+'{{ o.pk }}'+'/" title="Перейти на станицу заказа">'+'{{ o.address }}'+'</a><hr>'+
+                marker.bindPopup('<a href="{% url 'order:order_detail' o.pk %}'+'/" title="Перейти на станицу заказа">'+'{{ o.address }}'+'</a><hr>'+
                     '{{ o.product.name }} - '+'{{ o.provider.name }}<hr>'+
                     'Объем: {{ o.volume }} - '+'{{ o.cost }}р');
             {% endfor %}

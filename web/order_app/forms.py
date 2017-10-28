@@ -1,13 +1,9 @@
-from django.forms import ModelForm, Textarea, Select, ModelChoiceField, IntegerField, HiddenInput, Form
+from django.forms import ModelForm, Textarea, ModelChoiceField, IntegerField, HiddenInput, Form
 from haystack.forms import SearchForm
 
-from .models import Order, Product, Comment
-
-
-class MySelect(Select):
-    def render_option(self, selected_choices, option_value, option_label):
-        # look at the original for something to start with
-        return '<option value="{}" data-tokens="{}">{}</option>'.format(option_value, str(option_label).lower(), option_label)
+from core.forms import MySelect
+from product_app.models import Product
+from .models import Order
 
 
 class OrderFormSet(Form):
@@ -75,14 +71,3 @@ class UpdateOrderForm(ModelForm):
 
 class OrderSearchForm(SearchForm):
     pass
-
-
-class CommentForm(ModelForm):
-
-    class Meta:
-        model = Comment
-        fields = ('text',)
-        widgets = {
-            'text': Textarea(attrs={'cols': 40, 'rows': 4}),
-        }
-

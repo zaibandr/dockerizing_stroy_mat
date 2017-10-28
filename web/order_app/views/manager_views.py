@@ -1,19 +1,15 @@
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
-
-from django.views.generic.edit import UpdateView
-
-from django.contrib.auth.models import User, Group
-from order_app.models import Order
-from provider_app.models import Product
-from order_app.forms import NewOrderForm, EditOrderForm, MultiOrderForm, OrderFormSet
-from django.forms import formset_factory
-
-from geopy.geocoders import Yandex
-
-
 # import the logging library
 import logging
+
+from django.contrib.auth.models import User
+from django.forms import formset_factory
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.views.generic.edit import UpdateView
+
+from order_app.forms import NewOrderForm, EditOrderForm, MultiOrderForm, OrderFormSet
+from order_app.models import Order
+from product_app.models import Product
 
 # Get an instance of a logger
 logger = logging.getLogger('stroy_mat.order_app.manager')
@@ -45,7 +41,7 @@ def new_order_with_formset(request):
                             'tonar': new_order.tonar,
                             'product': Product.objects.get(pk=int(request.POST['form-{}-product'.format(i)])),
                             'volume': int(request.POST['form-{}-volume'.format(i)]),
-                            'manager': User.objects.get(username=request.user),
+                            'author': User.objects.get(username=request.user),
                         }
                     except Exception as e:
                         log_title = 'функция new_order_with_formset \n'
