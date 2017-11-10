@@ -1,18 +1,15 @@
-{% if order.status == 'CRTD' or order.status == 'Создан' %}
+{% if order.status == 'CR' or order.status == 'Создан' %}
     <p>Заказ ожидает обработки</p>
-    <p>Прошло времени: {{ order.time_created|timesince:now }}</p>
-{% elif order.status == 'PRCSG' or order.status == 'В обработке' %}
-    <p>Заказ обрабатывается</p>
-    <p>Прошло времени: {{ order.time_created|timesince:now }}</p>
+    <p>Прошло времени: {{ order.created|timesince:now }}</p>
 {% else %}
     <p>Заказ обработан</p>
-    <p>Обработан за: {{ order.time_created|timesince:order.time_completed }}</p>
+    <p>Обработан за: {{ order.created|timesince:order.time_completed }}</p>
 {% endif %}
 
-<p>Менеджер: {{ order.manager }}</p>
-<p>{{ order.status }}</p>
+<p>Менеджер: {{ order.author }}</p>
+<p>{{ order.get_status_display }}</p>
 
-<p>Время создания: {{ order.time_created }}</p>
-<p>Время обновления: {{ order.time_updated }}</p>
+<p>Время создания: {{ order.created }}</p>
+<p>Время обновления: {{ order.modified }}</p>
 <p>{{ order.time_completed }}</p>
 <p>{{ now }}</p>

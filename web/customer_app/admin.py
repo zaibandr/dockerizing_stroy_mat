@@ -10,6 +10,12 @@ class CustomerAdmin(SearchModelAdmin):
 
 
 class CreditPaymentAdmin(SearchModelAdmin):
+    fields = (
+        'name', 'contact_name',
+        'phone_number', 'sms_phone_number', 'mail_1', 'mail_2', 'description',
+        'saldo_debet', 'saldo_credit', 'saldo_date',
+    )
+
     list_display = ('customer', 'pk', 'amount', 'date', 'paid_date', 'paid', 'balance_add', 'balance_take_down')
     list_filter = ('date', 'paid_date', 'paid')
 

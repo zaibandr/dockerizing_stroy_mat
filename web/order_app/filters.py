@@ -16,7 +16,7 @@ class MySelect(Select):
 
 class OrderFilter(django_filters.FilterSet):
     date_from_to_range = django_filters.DateFromToRangeFilter(
-        name='time_created',
+        name='created',
         label='Дата создания',
         widget=widgets.RangeWidget(attrs={'placeholder': 'dd.mm.yyyy'}))
 

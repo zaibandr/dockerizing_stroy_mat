@@ -21,24 +21,31 @@ class NewShipmentForm(ModelForm):
             'address',
 
             'description',
-            'manager',
 
             'volume',
             'cost_in',
             'cost_out',
 
+            'stamp',
+            'confidant',
 
-            'manager',
+            'price_delivery',
+
+
+
+            'author',
             'status',
             'price',
             'profit'
         ]
 
-        exclude = ['manager', 'status', 'price', 'profit']
+        exclude = ['author', 'status', 'price', 'profit']
 
         widgets = {
             'description': Textarea(attrs={'cols': 40, 'rows': 4}),
-            'product': MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'})
+            'product': MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'}),
+            'customer': MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'}),
+            'provider': MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'}),
         }
 
 

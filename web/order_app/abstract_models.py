@@ -12,15 +12,15 @@ class OrderNerudInfo(models.Model):
         (RECEIPT_NIGHT, 'Ночь'),
     )
 
-    TONAR_YES = 1
-    TONAR_NO = 0
+    TONAR_YES = 't'
+    TONAR_NO = 'f'
 
     tonar_choice = (
         (TONAR_YES, 'Да'),
         (TONAR_NO, 'Нет'),
     )
 
-    tonar = models.IntegerField(choices=tonar_choice, default=TONAR_NO, verbose_name='Тонары')
+    tonar = models.CharField(max_length=2, choices=tonar_choice, default=TONAR_YES, verbose_name='Тонары')
     time_of_receipt = models.CharField(max_length=2, choices=receipt_choice,
                                        default=RECEIPT_BOTH, verbose_name='Время приема')
 
@@ -37,17 +37,17 @@ class OrderBaseInfo(models.Model):
         (STATUS_COMPLETED, 'Обработан'),
     )
 
-    PAYMENT_CASH = 1
-    PAYMENT_NON_CASH = 0
+    PAYMENT_CASH = 't'
+    PAYMENT_NON_CASH = 'f'
 
     payment_choice = (
         (PAYMENT_NON_CASH, 'Безналичный'),
         (PAYMENT_CASH, 'Наличный'),
     )
 
-    status = models.CharField(max_length=7, choices=status_choice, default='CRTD', verbose_name='Статус', db_index=True)
+    status = models.CharField(max_length=7, choices=status_choice, default=STATUS_CREATED, verbose_name='Статус', db_index=True)
     volume = models.IntegerField(default=10, verbose_name='Объем')
-    payment = models.IntegerField(choices=payment_choice, default='Наличный', verbose_name='Расчет')
+    payment = models.CharField(max_length=2, choices=payment_choice, default=PAYMENT_NON_CASH, verbose_name='Расчет')
 
     class Meta:
         abstract = True
@@ -84,20 +84,10 @@ class OrderBaseInfo(models.Model):
     #     return point_within_provider, geo_data
 
 
-class DeliveryInfo(models.Model):
-    address = models.CharField(max_length=200, null=True, verbose_name='Адрес', )
-    longitude = models.FloatField(blank=True, null=True, verbose_name='Долгота')
-    latitude = models.FloatField(blank=True, null=True, verbose_name='Широта')
-    coordinate = models.CharField(blank=True, null=True, max_length=100, verbose_name='Координаты')
-
-    class Meta:
-        abstract = True
-
-
 class PaymentInfo(models.Model):
-    cost = models.IntegerField(default=0, verbose_name='Стоимость')
-    pick_cost = models.IntegerField(default=0, verbose_name='Стоимость самовывоза')
-    delivery_cost = models.IntegerField(default=0, verbose_name='Стоимость c доставкой')
+    cost = models.IntegerField(default=0, null=True, blank=True, verbose_name='Стоимость')
+    pick_cost = models.IntegerField(default=0, null=True, blank=True,  verbose_name='Стоимость самовывоза')
+    delivery_cost = models.IntegerField(default=0, null=True, blank=True, verbose_name='Стоимость c доставкой')
 
     class Meta:
         abstract = True

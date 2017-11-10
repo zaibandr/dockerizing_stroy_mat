@@ -16,7 +16,7 @@ class ProductColumn(tables.Column):
 class TimeColumn(tables.Column):
     def render(self, record, value):
         if record.time_completed is not None:
-            return int((record.time_completed - record.time_created).total_seconds()/60)
+            return int((record.time_completed - record.created).total_seconds()/60)
         return '-'
 
 
@@ -47,7 +47,7 @@ class OrdersTable(tables.Table):
 
         row_attrs = {
             'class': lambda
-                record: 'info' if record.status == 'UNREAD' else 'success' if record.status == 'CMPLTD' else 'danger'
+                record: 'info' if record.status == 'UNREAD' else 'success' if record.status == Order.STATUS_COMPLETED else 'danger'
         }
 
 

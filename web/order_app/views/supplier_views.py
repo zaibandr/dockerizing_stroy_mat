@@ -19,7 +19,7 @@ class OrderUpdate(UpdateView):
     def form_valid(self, form):
         # send notify
         notify.send(sender=User.objects.get(username=self.request.user),
-                    recipient=User.objects.get(pk=self.object.manager_id),
+                    recipient=User.objects.get(pk=self.object.author_id),
                     action_object=self.object,
                     verb='''Обновил(а) заказ
                             <a href="{}">№{}</a>'''.format(
@@ -35,7 +35,7 @@ class OrderUpdate(UpdateView):
         print(request.POST)
         print(request.POST['time_completed'])
         if request.POST['provider'] == '0' or request.POST['cost'] == '0':
-            request.POST['status'] = 'CRTD'
+            request.POST['status'] = 'CR'
             request.POST['time_completed'] = None
         else:
             # Заказ обработан

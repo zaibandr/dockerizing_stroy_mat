@@ -12,9 +12,9 @@ class MySelect(Select):
 
 
 class ProviderFilter(django_filters.FilterSet):
-    products = django_filters.ChoiceFilter(choices=Product.objects.all().values_list('pk', 'name'),
-                                           widget=MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'})
-                                           )
+    # products = django_filters.ChoiceFilter(choices=Product.objects.all().values_list('pk', 'name'),
+    #                                        widget=MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'})
+    #                                        )
 
     class Meta:
         model = Provider

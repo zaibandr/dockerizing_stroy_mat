@@ -13,7 +13,7 @@ class DischargeInputAdmin(admin.ModelAdmin):
 
 
 class DischargeCustomerAdmin(admin.ModelAdmin):
-    list_display = ('customer', 'pk', 'action', 'value', 'date')
+    list_display = ('customer', 'pk', 'action', 'value', 'document_id', 'action_date', 'date')
     list_filter = ('date', 'action', )
 
     def customer_name(self, obj):
@@ -24,7 +24,7 @@ class DischargeCustomerAdmin(admin.ModelAdmin):
 
 
 class DischargeProviderAdmin(admin.ModelAdmin):
-    list_display = ('provider', 'pk', 'action', 'value', 'date')
+    list_display = ('provider', 'pk', 'action', 'value', 'document_id', 'action_date', 'date')
     list_filter = ('date', 'action',)
 
     def provider_name(self, obj):

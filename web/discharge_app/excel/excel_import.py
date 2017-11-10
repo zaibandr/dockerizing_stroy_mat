@@ -7,7 +7,8 @@ def discharge_excel_to_json(filename):
 
     sh = book.sheet_by_index(0)
 
-    date_index = 0
+    action_date_index = 0
+    document_id_index = 0
     debet_index = 0
     credit_index = 0
     name_index = 0
@@ -17,7 +18,9 @@ def discharge_excel_to_json(filename):
         if i == 10:
             for index, row in enumerate(sh.row(rx)):
                 if row.value == 'Дата операции':
-                    date_index = index
+                    action_date_index = index
+                elif row.value == 'Номер документа':
+                    document_id_index = index
                 elif row.value == 'Дебет':
                     debet_index = index
                 elif row.value == 'Кредит':
@@ -28,7 +31,8 @@ def discharge_excel_to_json(filename):
                     name_index = index
         if i >= 12:
             data.append({
-                'date': sh.row(rx)[date_index].value,
+                'action_date': sh.row(rx)[action_date_index].value,
+                'document_id': sh.row(rx)[document_id_index].value,
                 'name': sh.row(rx)[name_index].value,
                 'credit': sh.row(rx)[credit_index].value,
                 'debet': sh.row(rx)[debet_index].value

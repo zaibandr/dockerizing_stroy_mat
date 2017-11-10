@@ -23,7 +23,7 @@
             labels: {
                 formatter: function () {
                     var date = this.value;
-                    return '<a href="/filterviews?date_from_to_range_0='+ date + '&date_from_to_range_1='+ date + '">' + date + '</a>'
+                    return '<a href="{% url 'order:order_filter_views' %}?date_from_to_range_0='+ date + '&date_from_to_range_1='+ date + '">' + date + '</a>'
                 },
                 useHTML: true
             },

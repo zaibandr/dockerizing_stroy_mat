@@ -1,32 +1,17 @@
 from django.db import models
 from django.urls import reverse
 
-from core.models import OwnerModel, TimeStampedModel
-from .abstract_models import OrderNerudInfo, OrderBaseInfo, DeliveryInfo, PaymentInfo
+from core.models import OwnerModel, TimeStampedModel, DeliveryModel
 from product_app.models import Product
 from provider_app.models import Provider
+from .abstract_models import OrderNerudInfo, OrderBaseInfo, PaymentInfo
+from .managers import NearSimilarOrderManager
 
 
-class NearSimilarOrderManager(models.Manager):
-    use_for_related_fields = True
-
-    def near_similar_order(self, point_longitude: float, point_latitude: float, product_id: int, km: int=10):
-        from haystack.query import SearchQuerySet
-        from haystack.utils.geo import Point, D
-        ninth_and_mass = Point(point_longitude, point_latitude)
-
-        sqs = SearchQuerySet().dwithin(
-            'location',
-            ninth_and_mass,
-            D(km=km)
-        ).distance('location', ninth_and_mass).order_by('distance')
-        return sqs
-
-
-class Order(OwnerModel, PaymentInfo, OrderBaseInfo, OrderNerudInfo, DeliveryInfo, TimeStampedModel, models.Model):
+class Order(OwnerModel, PaymentInfo, OrderBaseInfo, OrderNerudInfo, DeliveryModel, TimeStampedModel, models.Model):
 
     product = models.ForeignKey(Product, default=1)
-    provider = models.ForeignKey(Provider, default=4, verbose_name='Поставщик')
+    provider = models.ForeignKey(Provider, default=0, verbose_name='Поставщик')
 
     description = models.TextField(blank=True, null=True, verbose_name='Описание')
 

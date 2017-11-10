@@ -33,7 +33,7 @@ $('#search').typeahead({
   templates: {
       header: '<h3 class="order-id">Заказы</h3>',
       suggestion: function(data) {
-          return '<p><a href="{% include "core/_leaflet_icons.html" %}">Заказ №' + data.order + '</a><p>';
+          return '<p><a href="/order/detail/' + data.order + '/">Заказ №' + data.order + '</a><p>';
       },
   }
 },

@@ -17,7 +17,7 @@ class NotifiedProviders(tables.Table):
 
     def render_provider_name(self, record, value):
         return format_html('<a href="{}"><p class="text-left">{}</p></a>',
-                           reverse('provider:detail', kwargs={'pk': record.pk}),
+                           reverse('provider:provider_detail', kwargs={'pk': record.provider.pk}),
                            value)
 
     def render_sms_id(self, record, value):

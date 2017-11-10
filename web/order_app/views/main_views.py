@@ -1,5 +1,3 @@
-
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.utils import timezone
@@ -9,8 +7,8 @@ from django_tables2 import RequestConfig
 
 from order_app.models import Order
 from order_app.tables import OrdersTable
-from order_app.viewmixins import ProviderTableMixin, NotifiedProviderTableMixin
-from order_app.viewmixins import CommentMixin, NotificationMixin
+from order_app.viewmixins import ProviderTableMixin, NotifiedProviderTableMixin, GeoJsonMixin
+from order_app.viewmixins import CommentMixin, NotificationMixin, NearSimilarMixin
 
 
 @login_required()
@@ -19,7 +17,7 @@ def orders(request, status='all'):
     if request.user.is_staff:
         all_orders_sqs = Order.objects.all().select_related('product')
     else:
-        all_orders_sqs = Order.objects.filter(manager=request.user).select_related('product')
+        all_orders_sqs = Order.objects.filter(author=request.user).select_related('product')
 
     all_orders = OrdersTable(all_orders_sqs)
 
@@ -39,7 +37,8 @@ def orders(request, status='all'):
     return render(request, 'order_app/order_list.html', context)
 
 
-class OrderDetailView(CommentMixin, NotificationMixin, ProviderTableMixin, NotifiedProviderTableMixin, DetailView):
+class OrderDetailView(NearSimilarMixin, CommentMixin, NotificationMixin, ProviderTableMixin,
+                      GeoJsonMixin, NotifiedProviderTableMixin, DetailView):
 
     model = Order
 

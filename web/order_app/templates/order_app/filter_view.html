@@ -59,13 +59,13 @@
             {% for order in order_list %}
                 var marker = L.marker(
                     [{{ order.latitude|stringformat:"f" }}, {{ order.longitude|stringformat:"f"}}],
-                    {% if order.status == 'CMPLTD' %}
-                        {icon: greenIcon};
+                    {% if order.status == 'CM' %}
+                        {icon: greenIcon}
                     {% else %}
-                        {redIcon}
+                        {icon: redIcon}
                     {% endif %}
                 )
-                marker.addTo(map).bindPopup('<a href="/order/detail/'+'{{ order.pk }}'+'/" title="Перейти на станицу заказа">'+'{{ order.address }}'+'</a><hr>'+
+                marker.addTo(map).bindPopup('<a href="{% url 'order:order_detail' order.pk %}'+'/" title="Перейти на станицу заказа">'+'{{ order.address }}'+'</a><hr>'+
                     '{{ order.product.name }} - '+'{{ order.provider.name }}<hr>'+
                     'Объем: {{ order.volume }} - '+'{{ order.cost }}р');
             {% endfor %}

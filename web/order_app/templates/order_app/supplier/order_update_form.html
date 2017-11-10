@@ -14,7 +14,7 @@
         {% csrf_token %}
         {% bootstrap_form form %}
 
-        <input type="hidden" name = "status" value="CMPLTD">
+        <input type="hidden" name = "status" value="CM">
 
         {% buttons %}
             <a href="{% url 'order:order_detail' pk=order.pk%}" class="btn btn-default" role="button">Отменить</a>

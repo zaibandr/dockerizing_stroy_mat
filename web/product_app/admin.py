@@ -2,7 +2,7 @@ from django.contrib import admin
 from haystack.admin import SearchModelAdmin
 from leaflet.admin import LeafletGeoAdminMixin
 
-from .models import Product, ProductGeo
+from .models import Product, Region, PickPoint
 
 
 class CustomLeafletGeoAdminMixin(LeafletGeoAdminMixin):
@@ -17,8 +17,13 @@ class ProductAdmin(SearchModelAdmin):
 admin.site.register(Product, ProductAdmin)
 
 
-class ProductGeoAdmin(CustomLeafletGeoAdminMixin, admin.ModelAdmin):
+class RegionAdmin(CustomLeafletGeoAdminMixin, admin.ModelAdmin):
     list_display = ('description', )
 
-admin.site.register(ProductGeo, ProductGeoAdmin)
+admin.site.register(Region, RegionAdmin)
 
+
+class PickPointAdmin(CustomLeafletGeoAdminMixin, admin.ModelAdmin):
+    list_display = ('description', )
+
+admin.site.register(PickPoint, PickPointAdmin)

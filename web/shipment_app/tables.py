@@ -8,15 +8,23 @@ class ShipmentTable(tables.Table):
         model = Shipment
         fields = (
             'product',
-            # 'status',
             'customer',
             'provider',
             'transporter',
             'address',
-            'volume',
 
+            'description',
+
+            'volume',
             'cost_in',
             'cost_out',
-            'price',
+
+            'stamp',
+            'confidant',
+
+            'price_delivery',
+
+
+            'price_total',
             'profit',
         )

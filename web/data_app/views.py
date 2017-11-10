@@ -47,7 +47,7 @@ def provider_orders(request):
 def orders_per_day(request):
     days = {}
     for order in Order.objects.all():
-        date = order.time_created.date().strftime('%d.%m.%Y')
+        date = order.created.date().strftime('%d.%m.%Y')
         if date not in days:
             days[date] = 1
         else:
@@ -65,13 +65,13 @@ def orders_per_day(request):
 @cached_as(Order, timeout=60*60*4)
 def overage_complete_time(request):
     days = {}
-    for order in Order.objects.filter(status='CMPLTD'):
+    for order in Order.objects.filter(status=Order.STATUS_COMPLETED):
         date = order.time_completed.date().strftime('%d.%m.%Y')
-        if date == order.time_created.date().strftime('%d.%m.%Y'):
+        if date == order.created.date().strftime('%d.%m.%Y'):
             if date not in days:
-                days[date] = [order.time_completed - order.time_created]
+                days[date] = [order.time_completed - order.created]
             else:
-                days[date] += [order.time_completed - order.time_created]
+                days[date] += [order.time_completed - order.created]
 
     days_overage = {}
 
@@ -101,7 +101,7 @@ def overage_complete_time(request):
 
 @cached_as(Order, timeout=60*60*4)
 def all_order_on_map(request):
-    all_order = Order.objects.all()
+    all_order = Order.objects.all().select_related('provider', 'product')
 
     context = {
         'all_order': all_order
@@ -120,7 +120,10 @@ def order_triangle(request):
     from scipy.spatial import Delaunay
     from shapely.geometry import Polygon
 
-    orders = Order.objects.filter(product_id=1, status='CMPLTD', cost__gt=0, cost__lt=650)
+    orders = Order.objects.filter(
+        product_id=1, status=Order.STATUS_COMPLETED, cost__gt=0, cost__lt=650
+    ).select_related('provider', 'product')
+
     points = np.array([[o.latitude, o.longitude] for o in orders])
     tri = Delaunay(points)
 

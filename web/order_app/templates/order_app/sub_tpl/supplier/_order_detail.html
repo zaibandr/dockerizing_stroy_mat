@@ -9,7 +9,7 @@
             <li class="active"><a data-toggle="tab" href="#order-info-panel">Детали</a></li>
             <li><a data-toggle="tab" href="#meta-panel">Мета</a></li>
             <li><a data-toggle="tab" href="#providers-panel">Поставщики</a></li>
-            <li><a data-toggle="tab" href="#similar-order-panel">Похожие заказы</a></li>
+{#            <li><a data-toggle="tab" href="#similar-order-panel">Похожие заказы</a></li>#}
             <li><a data-toggle="tab" href="#comments-panel">Коментарии</a></li>
             <li><a data-toggle="tab" href="#notified-providers">Уведомленные поставщики</a></li>
 
@@ -46,12 +46,6 @@
 {#                    <button id="hide-20" class="btn btn-danger">Скрыть похожие 20км</button>#}
 {#                    <br>#}
 {#                </div>#}
-{#                <div hidden id="30-km">#}
-{#                    <h3>30 км</h3>#}
-{#                    {% render_table near_similar_order_30_km_table %}#}
-{#                    <button id="hide-30" class="btn btn-danger">Скрыть похожие 30км</button>#}
-{#                    <br>#}
-{#                </div>#}
 {##}
 {#                <script>#}
 {#                $(document).ready(function(){#}
@@ -61,18 +55,12 @@
 {#                    $("#show-20").click(function(){#}
 {#                        $("#20-km").show();#}
 {#                    });#}
-{#                    $("#hide-30").click(function(){#}
-{#                        $("#30-km").hide();#}
-{#                    });#}
-{#                    $("#show-30").click(function(){#}
-{#                        $("#30-km").show();#}
-{#                    });#}
 {#                });#}
 {#                </script>#}
 {#                <hr>#}
 {##}
 {#                <button id="show-20" class="btn btn-primary">Показать похожие 20км</button>#}
-{#                <button id="show-30" class="btn btn-primary">Показать похожие 30км</button>#}
+{##}
 {##}
 {#            </div>#}
             <div id="comments-panel" class="tab-pane fade">

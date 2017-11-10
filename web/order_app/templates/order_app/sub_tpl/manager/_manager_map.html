@@ -17,7 +17,7 @@
                 [{{ n_s_o.latitude|stringformat:"f" }}, {{ n_s_o.longitude|stringformat:"f"}}],
                 {icon: blueIcon}
                 );
-            marker.bindPopup('<a href="{% url 'order:order_detail' n_s_o.pk %}'+'/" title="Перейти на станицу заказа">'+'{{ n_s_o.address }}'+'</a><hr>'+
+            marker.bindPopup('<a href="{% url 'order:order_detail' n_s_o.pk %}'+'" title="Перейти на станицу заказа">'+'{{ n_s_o.address }}'+'</a><hr>'+
                     '{{ n_s_o.product.name }} - '+'{{ n_s_o.provider.name }}<hr>'+
                     'Объем: {{ n_s_o.volume }} - '+'{{ n_s_o.cost }}р');
             km_10.push(marker);
@@ -30,34 +30,20 @@
                 [{{ n_s_o.latitude|stringformat:"f" }}, {{ n_s_o.longitude|stringformat:"f"}}],
                 {icon: blueIcon}
                 );
-            marker.bindPopup('<a href="{% url 'order:order_detail' n_s_o.pk %}'+'/" title="Перейти на станицу заказа">'+'{{ n_s_o.address }}'+'</a><hr>'+
+            marker.bindPopup('<a href="{% url 'order:order_detail' n_s_o.pk %}'+'" title="Перейти на станицу заказа">'+'{{ n_s_o.address }}'+'</a><hr>'+
                     '{{ n_s_o.product.name }} - '+'{{ n_s_o.provider.name }}<hr>'+
                     'Объем: {{ n_s_o.volume }} - '+'{{ n_s_o.cost }}р');
             km_20.push(marker);
         {% endfor %}
         console.log(km_20);
 
-        var km_30 = [];
-        {% for n_s_o in near_similar_order_30_km %}
-            var marker = L.marker(
-                [{{ n_s_o.latitude|stringformat:"f" }}, {{ n_s_o.longitude|stringformat:"f"}}],
-                {icon: blueIcon}
-                );
-            marker.bindPopup('<a href="{% url 'order:order_detail' n_s_o.pk %}'+'/" title="Перейти на станицу заказа">'+'{{ n_s_o.address }}'+'</a><hr>'+
-                    '{{ n_s_o.product.name }} - '+'{{ n_s_o.provider.name }}<hr>'+
-                    'Объем: {{ n_s_o.volume }} - '+'{{ n_s_o.cost }}р');
-            km_30.push(marker);
-        {% endfor %}
-        console.log(km_30);
 
         var km_10_layer = L.layerGroup(km_10);
         var km_20_layer = L.layerGroup(km_20);
-        var km_30_layer = L.layerGroup(km_30);
 
         var layers = {
             "10km": km_10_layer.addTo(map),
             "20km": km_20_layer,
-            "30km": km_30_layer
         };
 
         L.control.layers(layers, null, { collapsed: false }).addTo(map);

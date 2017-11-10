@@ -7,7 +7,7 @@
 
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#order-info-panel">Детали</a></li>
-            <li><a data-toggle="tab" href="#similar-order-panel">Похожие заказы</a></li>
+{#            <li><a data-toggle="tab" href="#similar-order-panel">Похожие заказы</a></li>#}
             <li><a data-toggle="tab" href="#comments-panel">Коментарии</a></li>
 
         </ul>
@@ -20,50 +20,50 @@
 
             </div>
 
-            <div id="similar-order-panel" class="tab-pane fade">
-                <h3>Похожие заказы</h3>
-                <div id="10-km">
-                    <h3>10 км</h3>
-                    {% render_table near_similar_order_10_km_table %}
-                </div>
-                <div hidden id="20-km">
-                    <h3>20 км</h3>
-                    {% render_table near_similar_order_20_km_table %}
-                    <button id="hide-20" class="btn btn-danger">Скрыть похожие 20км</button>
-                    <br>
-                </div>
-                <div hidden id="30-km">
-                    <h3>30 км</h3>
-                    {% render_table near_similar_order_30_km_table %}
-                    <button id="hide-30" class="btn btn-danger">Скрыть похожие 30км</button>
-                    <br>
-                </div>
-
-                <script>
-                $(document).ready(function(){
-                    $("#hide-20").click(function(){
-                        $("#20-km").hide();
-                    });
-                    $("#show-20").click(function(){
-                        $("#20-km").show();
-                    });
-                    $("#hide-30").click(function(){
-                        $("#30-km").hide();
-                    });
-                    $("#show-30").click(function(){
-                        $("#30-km").show();
-                    });
-                });
-                </script>
-                <hr>
-
-                <button id="show-20" class="btn btn-primary">Показать похожие 20км</button>
-                <button id="show-30" class="btn btn-primary">Показать похожие 30км</button>
-
-            </div>
+{#            <div id="similar-order-panel" class="tab-pane fade">#}
+{#                <h3>Похожие заказы</h3>#}
+{#                <div id="10-km">#}
+{#                    <h3>10 км</h3>#}
+{#                    {% render_table near_similar_order_10_km_table %}#}
+{#                </div>#}
+{#                <div hidden id="20-km">#}
+{#                    <h3>20 км</h3>#}
+{#                    {% render_table near_similar_order_20_km_table %}#}
+{#                    <button id="hide-20" class="btn btn-danger">Скрыть похожие 20км</button>#}
+{#                    <br>#}
+{#                </div>#}
+{#                <div hidden id="30-km">#}
+{#                    <h3>30 км</h3>#}
+{#                    {% render_table near_similar_order_30_km_table %}#}
+{#                    <button id="hide-30" class="btn btn-danger">Скрыть похожие 30км</button>#}
+{#                    <br>#}
+{#                </div>#}
+{##}
+{#                <script>#}
+{#                $(document).ready(function(){#}
+{#                    $("#hide-20").click(function(){#}
+{#                        $("#20-km").hide();#}
+{#                    });#}
+{#                    $("#show-20").click(function(){#}
+{#                        $("#20-km").show();#}
+{#                    });#}
+{#                    $("#hide-30").click(function(){#}
+{#                        $("#30-km").hide();#}
+{#                    });#}
+{#                    $("#show-30").click(function(){#}
+{#                        $("#30-km").show();#}
+{#                    });#}
+{#                });#}
+{#                </script>#}
+{#                <hr>#}
+{##}
+{#                <button id="show-20" class="btn btn-primary">Показать похожие 20км</button>#}
+{#                <button id="show-30" class="btn btn-primary">Показать похожие 30км</button>#}
+{##}
+{#            </div>#}
 
             <div id="comments-panel" class="tab-pane fade">
-                {% include "order_app/sub_tpl/comments.html" %}
+                {% include "comment_app/comments.html" %}
             </div>
         </div>
 

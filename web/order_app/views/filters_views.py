@@ -15,6 +15,9 @@ class FilteredOrderListView(FilterView, SingleTableView):
 
     filterset_class = OrderFilter
 
+    def get_queryset(self):
+        return self.model.objects.all().select_related('product', 'provider')
+
     table_pagination = {
         'per_page': 50
     }

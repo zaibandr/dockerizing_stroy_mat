@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import CreateView, UpdateView
 from django_tables2 import RequestConfig
 
 from .forms import NewShipmentForm, EditShipmentForm
@@ -15,7 +15,7 @@ def shipments(request):
     if request.user.is_staff:
         all_shipment_sqs = Shipment.objects.all()
     else:
-        all_shipment_sqs = Shipment.objects.filter(manager=request.user)
+        all_shipment_sqs = Shipment.objects.filter(author=request.user)
 
     all_shipment = ShipmentTable(all_shipment_sqs)
 
@@ -40,6 +40,12 @@ class ShipmentDetailView(DetailView):
         return context
 
 
+class ShipmentAdd(CreateView):
+    model = Shipment
+    form_class = NewShipmentForm
+    template_name = 'shipment_app/new_shipment.html'
+
+
 def new_shipment_form(request):
 
     if request.method == 'POST':
@@ -53,10 +59,7 @@ def new_shipment_form(request):
             ###########################
             new_shipment = form.save(commit=False)
 
-            new_shipment.manager = User.objects.get(username=request.user)
-
-            new_shipment.profit = (new_shipment.cost_out - new_shipment.cost_in) * new_shipment.volume
-            new_shipment.price = new_shipment.cost_out * new_shipment.volume
+            new_shipment.author= User.objects.get(username=request.user)
 
             new_shipment.save()
 

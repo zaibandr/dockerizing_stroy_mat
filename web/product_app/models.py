@@ -16,14 +16,25 @@ class Product(models.Model):
         return self.name
 
 
-class ProductGeo(DescriptionModel, models.Model):
+class Region(DescriptionModel, models.Model):
     products = models.ManyToManyField(Product, verbose_name='Продукция', db_index=True)
     delivery_region = PolygonField(default='[]',)
+
+    class Meta:
+        verbose_name = 'Область доставки'
+        verbose_name_plural = 'Области доставок'
+
+    def __str__(self):
+        return self.description
+
+
+class PickPoint(DescriptionModel, models.Model):
+    products = models.ManyToManyField(Product, verbose_name='Продукция', db_index=True)
     pick_point = PointField()
 
     class Meta:
-        verbose_name = 'Область'
-        verbose_name_plural = 'Области'
+        verbose_name = 'Пунк самовывоза'
+        verbose_name_plural = 'Пункы самовывоза'
 
     def __str__(self):
         return self.description

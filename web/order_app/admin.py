@@ -13,7 +13,7 @@ order_refresh.short_description = "Обновить отмеченные зак�
 
 
 class OrderAdmin(SearchModelAdmin):
-    list_display = ('pk', 'product', 'volume', 'status', 'address', 'tonar', 'phone_number', 'created')
+    list_display = ('pk', 'product', 'volume', 'status', 'address', 'phone_number', 'created')
     list_filter = ('status', 'created',)
     search_fields = ('address', 'provider__name', 'product__name', 'description')
     actions = [order_refresh]

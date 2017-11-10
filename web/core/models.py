@@ -27,14 +27,12 @@ class DescriptionModel(models.Model):
 class BalanceModel(models.Model):
     balance = models.IntegerField(editable=False, default=0, verbose_name='Баланс')
 
+    saldo_debet = models.IntegerField(default=0, verbose_name='Сальдо дебет')
+    saldo_credit = models.IntegerField(default=0, verbose_name='Сальдо кредит')
+    saldo_date = models.DateField(null=True, default=None, blank=True, verbose_name='Салбдо дата')
+
     class Meta:
         abstract = True
-
-    def balance_add(self, amount):
-        self.balance += int(amount)
-
-    def balance_take_down(self, amount):
-        self.balance -= int(amount)
 
 
 class MailModel(models.Model):
@@ -55,6 +53,16 @@ class PhoneNumberModel(models.Model):
 
 class ContactNameModel(models.Model):
     contact_name = models.TextField(max_length=200, blank=True, verbose_name='Контакты')
+
+    class Meta:
+        abstract = True
+
+
+class DeliveryModel(models.Model):
+    address = models.CharField(max_length=200, null=True, verbose_name='Адрес', )
+    longitude = models.FloatField(blank=True, null=True, verbose_name='Долгота')
+    latitude = models.FloatField(blank=True, null=True, verbose_name='Широта')
+    coordinate = models.CharField(blank=True, null=True, max_length=100, verbose_name='Координаты')
 
     class Meta:
         abstract = True
