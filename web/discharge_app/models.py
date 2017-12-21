@@ -15,8 +15,38 @@ class DischargeInput(models.Model):
         return self.file.path
 
     class Meta:
-        verbose_name = "Выписка Банка"
-        verbose_name_plural = "Выписки Банка"
+        verbose_name = "Файл Выписки Банка"
+        verbose_name_plural = "Файлы Выписок Банка"
+
+
+class Entity(models.Model):
+    name = models.CharField(max_length=200, verbose_name='Наименование', db_index=True)
+    inn = models.TextField(verbose_name='ИНН', max_length=20, unique=True, db_index=True, null=True, default=None)
+
+    class Meta:
+        verbose_name = 'Контрагент'
+        verbose_name_plural = 'Контрагенты'
+
+    def __str__(self):
+        return self.name
+
+
+class DischargeEntity(models.Model):
+    entity = models.ForeignKey(Entity)
+    document_id = models.IntegerField(verbose_name='№ документа', unique=True, blank=True, default=None)
+
+    debet = models.FloatField(verbose_name='Дебет')
+    credit = models.FloatField(verbose_name='Кредит')
+
+    action_date = models.CharField(max_length=20, verbose_name='Дата операции', blank=True, default=None)
+    date = models.DateTimeField(auto_now_add=True, verbose_name='Дата')
+
+    class Meta:
+        verbose_name = 'Выписка Банка'
+        verbose_name_plural = 'Выписки Банка'
+
+    def __str__(self):
+        return '{} №({})'.format(self.entity.name, self.document_id)
 
 
 class DischargeModel(models.Model):
@@ -30,8 +60,6 @@ class DischargeModel(models.Model):
 
     action = models.IntegerField(choices=action_choice, verbose_name='Операция')
     action_date = models.CharField(max_length=20, verbose_name='Дата операции', blank=True, default=None)
-    document_id = models.IntegerField(verbose_name='№ документа', unique=True, blank=True, default=None)
-    shipment_id = models.ForeignKey(Shipment, verbose_name='№ отгрузки', blank=True, null=True, default=None)
 
     value = models.FloatField(verbose_name='Сумма')
 
@@ -43,43 +71,26 @@ class DischargeModel(models.Model):
 
 class DischargeProvider(DischargeModel, models.Model):
     provider = models.ForeignKey(Provider)
+    shipment_id = models.ForeignKey(Shipment, verbose_name='№ отгрузки', blank=True, null=True, default=None)
 
     class Meta:
-        verbose_name = "Выписка поставщика"
-        verbose_name_plural = "Выписки поставщика"
+        verbose_name = "Выписка поставщика (расход)"
+        verbose_name_plural = "Выписки поставщика (расходы)"
 
-    def save(self, *args, **kwargs):
-
-        balance = self.provider.saldo_debet - self.provider.saldo_credit
-        for discharge in DischargeProvider.objects.filter(provider_id=self.provider_id):
-            if discharge.action == self.ACTION_BALANCE_UP:
-                balance += discharge.value
-            else:
-                balance -= discharge.value
-        p = Provider.objects.get(pk=self.provider_id)
-        p.balance = balance
-        p.save()
-
-        super(DischargeProvider, self).save(*args, **kwargs)
+    def __str__(self):
+        return 'Выписка {}: {} - {}р ({})'.format(self.shipment_id.provider.name, self.shipment_id, self.value,
+                                                  self.action_date)
 
 
 class DischargeCustomer(DischargeModel, models.Model):
     customer = models.ForeignKey(Customer)
+    shipment_id = models.ForeignKey(Shipment, verbose_name='№ отгрузки', blank=True, null=True, default=None)
 
     class Meta:
-        verbose_name = "Выписка заказчика"
-        verbose_name_plural = "Выписки заказчика"
+        verbose_name = "Выписка заказчика (приход)"
+        verbose_name_plural = "Выписки заказчика (приходы)"
 
-    def save(self, *args, **kwargs):
+    def __str__(self):
+        return 'Выписка {}: {} - {}р ({})'.format(self.shipment_id.customer.name, self.shipment_id, self.value,
+                                                  self.action_date)
 
-        balance = self.provider.saldo_credit - self.provider.saldo_debet
-        for discharge in DischargeCustomer.objects.filter(customer_id=self.customer_id):
-            if discharge.action == self.ACTION_BALANCE_UP:
-                balance += discharge.value
-            else:
-                balance -= discharge.value
-        p = Customer.objects.get(pk=self.customer_id)
-        p.balance = balance
-        p.save()
-
-        super(DischargeCustomer, self).save(*args, **kwargs)

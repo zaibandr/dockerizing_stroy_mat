@@ -1,12 +1,10 @@
 {% extends 'base.html' %}
 
-{% load cacheops %}
-
 {% block title %}
     Заказ № {{ order.pk }}
 {% endblock title %}
 
-{% cached_as Order 600 order_detail %}
+
 {% block content %}
     <div class="container" id="order-unread-notifications">
         {% for notice in unread_notifications %}
@@ -21,4 +19,3 @@
     {% endif %}
 
 {% endblock %}
-{% endcached_as %}

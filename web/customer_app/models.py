@@ -6,13 +6,17 @@ from core.models import ContactNameModel, DescriptionModel, PhoneNumberModel, Ba
 
 
 class Customer(ContactNameModel, DescriptionModel, PhoneNumberModel, BalanceModel, models.Model):
-
-    name = models.CharField(max_length=100, verbose_name='Имя', db_index=True)
+    name = models.CharField(max_length=200, verbose_name='Имя', db_index=True)
+    inn = models.CharField(verbose_name='ИНН', max_length=20, unique=True, db_index=True, null=True, default=None)
     individual_person = models.BooleanField(default=False, verbose_name='Физическое лицо')
 
     class Meta:
         verbose_name = 'Заказчик'
         verbose_name_plural = 'Заказчики'
+
+    # def save(self, *args, **kwargs):
+    #
+    #     super(Customer, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name

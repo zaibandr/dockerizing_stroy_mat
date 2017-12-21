@@ -2,10 +2,6 @@ from notifications.models import Notification
 from comment_app.models import Comment
 
 
-from provider_app.models import Provider
-from .models import Order
-
-
 class NotificationMixin:
     def get_context_data(self, **kwargs):
         context = super(NotificationMixin, self).get_context_data(**kwargs)
@@ -42,32 +38,18 @@ class ProviderTableMixin:
         from provider_app.tables import AvailableProviderTable
 
         context = super(ProviderTableMixin, self).get_context_data(**kwargs)
-        context['providers_table'] = AvailableProviderTable(
-            Provider.objects.can_delivery(self.object.longitude, self.object.latitude, self.object.product_id)
-        )
+        context['providers_table'] = AvailableProviderTable(self.object.can_delivery_providers())
         return context
 
 
 class NearSimilarMixin:
-    def get_similar(self, km=10):
-        similar_order = Order.objects.near_similar_order(
-            self.object.longitude, self.object.latitude, self.object.product_id,  km=km
-        )
-        similar_order_pk = [order.pk for order in similar_order]
-
-        similar = Order.objects.filter(
-            pk__in=similar_order_pk, status=Order.STATUS_COMPLETED
-        ).exclude(pk=self.object.pk).select_related('provider', 'product')
-
-        return similar
-
     def get_context_data(self, **kwargs):
         from .tables import SimilarOrderTable
 
         context = super(NearSimilarMixin, self).get_context_data(**kwargs)
 
-        similar_10 = self.get_similar(10)
-        similar_20 = self.get_similar(20)
+        similar_10 = self.object.near_similar_order(km=10).select_related('provider', 'product')
+        similar_20 = self.object.near_similar_order(km=20).select_related('provider', 'product')
 
         context['near_similar_order_10_km'] = similar_10
         context['near_similar_order_20_km'] = similar_20
@@ -81,40 +63,11 @@ class NearSimilarMixin:
 class GeoJsonMixin:
     def get_context_data(self, **kwargs):
         from shapely.geometry import Polygon, Point
-        import random
         import json
 
         context = super(GeoJsonMixin, self).get_context_data(**kwargs)
 
-        colors = [
-            'Red', 'DarkRed', 'Yellow', 'OrangeRed',
-            'Blue', 'DarkBlue', 'DeepSkyBlue', 'DeepPink',
-            'Green', 'Lime', 'SpringGreen', 'Black'
-        ]
-
-        geo_json = {
-            "type": "FeatureCollection",
-            "features": []
-        }
-        providers = Provider.objects.can_delivery(self.object.longitude, self.object.latitude, self.object.product_id)
-        for provider in providers:
-            color = random.choice(colors)
-            for region in provider.regions.filter(products__id__exact=self.object.product_id):
-                feature = {
-                    "type": "Feature",
-                    "properties": {
-                        "popup": '<a href="{}" >{}</a>'.format(provider.get_absolute_url(), provider.name),
-                        "color": color,
-                        "fillColor": color,
-                        "fillOpacity": 0
-                    },
-                    "geometry": {
-                        "type": "Polygon",
-                        "coordinates": region.delivery_region['coordinates']
-                    }
-                }
-
-                geo_json['features'].append(feature)
+        geo_json = self.object.get_geo_json
 
         # Сортировка полигонов по площади
         geo_json['features'] = sorted(

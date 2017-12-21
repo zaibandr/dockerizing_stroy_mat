@@ -71,66 +71,6 @@ def new_order_with_formset(request):
     return render(request, "order_app/manager/order_formset.html", context=context)
 
 
-def multi_order_create(request):
-    if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
-        form = MultiOrderForm(request.POST)
-        # check whether it's valid:
-        if form.is_valid():
-
-            new_order = form.save(commit=False)
-
-            new_order.manager = User.objects.get(username=request.user)
-
-            new_order.save()
-
-            last_oder = Order.objects.last()
-            last_order_url = last_oder.get_absolute_url()
-
-            return HttpResponseRedirect(last_order_url)
-
-    # if a GET (or any other method) we'll create a blank form
-    else:
-        form = MultiOrderForm()
-
-    return render(request, "order_app/manager/multi_order.html", {'form': form})
-
-
-def new_order_form(request):
-    # if this is a POST request we need to process the form data
-    if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
-        form = NewOrderForm(request.POST)
-        # check whether it's valid:
-        if form.is_valid():
-            ###########################
-            # set author field in form current user
-            # https://stackoverflow.com/questions/18246326/in-django-how-do-i-set-user-field-in-form-to-the-currently-logged-in-user
-            ###########################
-            new_order = form.save(commit=False)
-
-            new_order.manager = User.objects.get(username=request.user)
-
-            # geo_locator = Yandex()
-            # location = geo_locator.geocode(new_order.address, timeout=10)
-            # new_order.longitude = location.longitude
-            # new_order.latitude = location.latitude
-            # new_order.coordinate = location.point
-
-            new_order.save()
-
-            last_oder = Order.objects.last()
-            last_order_url = last_oder.get_absolute_url()
-
-            return HttpResponseRedirect(last_order_url)
-
-    # if a GET (or any other method) we'll create a blank form
-    else:
-        form = NewOrderForm()
-
-    return render(request, "order_app/manager/new_order.html", {'form': form})
-
-
 class EditOrder(UpdateView):
     model = Order
     form_class = EditOrderForm

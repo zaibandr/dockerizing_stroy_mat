@@ -1,12 +1,12 @@
-from django.shortcuts import render, get_object_or_404, redirect
-
-from order_app.models import Order
 import datetime
 
-from cacheops import cached_as, cached_view_as
+#from cacheops import cached_as
+from django.shortcuts import render
+
+from order_app.models import Order
 
 
-@cached_as(Order, timeout=60*60*4)
+#@cached_as(Order, timeout=60*60*4)
 def provider_orders(request):
 
     product_d = {}
@@ -43,7 +43,7 @@ def provider_orders(request):
     return render(request, 'data_app/provider_orders.html', context)
 
 
-@cached_as(Order, timeout=60*60*4)
+#@cached_as(Order, timeout=60*60*4)
 def orders_per_day(request):
     days = {}
     for order in Order.objects.all():
@@ -62,7 +62,7 @@ def orders_per_day(request):
     return render(request, 'data_app/orders_per_day.html', context)
 
 
-@cached_as(Order, timeout=60*60*4)
+#@cached_as(Order, timeout=60*60*4)
 def overage_complete_time(request):
     days = {}
     for order in Order.objects.filter(status=Order.STATUS_COMPLETED):
@@ -99,7 +99,7 @@ def overage_complete_time(request):
     return render(request, 'data_app/overage_complete_time.html', context)
 
 
-@cached_as(Order, timeout=60*60*4)
+#@cached_as(Order, timeout=60*60*4)
 def all_order_on_map(request):
     all_order = Order.objects.all().select_related('provider', 'product')
 
@@ -114,7 +114,7 @@ def get_real_ip(request):
     return render(request, 'qq')
 
 
-@cached_as(Order, timeout=60*60*4)
+#@cached_as(Order, timeout=60*60*4)
 def order_triangle(request):
     import numpy as np
     from scipy.spatial import Delaunay

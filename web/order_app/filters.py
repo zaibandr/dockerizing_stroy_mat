@@ -28,17 +28,17 @@ class OrderFilter(django_filters.FilterSet):
 
     volume = django_filters.RangeFilter(name='volume')
 
-    # product = django_filters.ChoiceFilter(
-    #     choices=Product.objects.all().values_list('pk', 'name'),
-    #     widget=MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'})
-    # )
-    #
-    # provider = django_filters.ChoiceFilter(
-    #     choices=Provider.objects.all().values_list('pk', 'name'),
-    #     widget=MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'})
-    # )
-    #
-    # manager = django_filters.ChoiceFilter(choices=User.objects.all().values_list('pk', 'username'))
+    product = django_filters.ChoiceFilter(
+        choices=Product.objects.all().values_list('pk', 'name'),
+        widget=MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'})
+    )
+
+    provider = django_filters.ChoiceFilter(
+        choices=Provider.objects.all().values_list('pk', 'name'),
+        widget=MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'})
+    )
+
+    author = django_filters.ChoiceFilter(choices=User.objects.all().values_list('pk', 'username'))
     status = django_filters.ChoiceFilter(choices=Order.status_choice)
     tonar = django_filters.ChoiceFilter(choices=Order.tonar_choice)
     time_of_receipt = django_filters.ChoiceFilter(choices=Order.receipt_choice)

@@ -16,3 +16,6 @@ class Comment(OwnerModel, models.Model):
 
     def get_absolute_url(self):
         return reverse('order:order_detail', kwargs={'pk': self.order_id})
+
+    def __str__(self):
+        return '{} \t({})'.format(self.text, self.author.username)

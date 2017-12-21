@@ -1,4 +1,4 @@
-Django
+Django==1.11.7
 gunicorn
 psycopg2
 django-haystack
@@ -25,15 +25,21 @@ tablib
 
 # кэширование
 redis
+django-redis
 django-cacheops
 
-# django-grappelli
+django-extensions
 
-boto
-django-ses
 
-#data
-numpy
-matplotlib
-scipy
-sklearn
+# sentry
+raven
+
+#json
+django-json-widget
+
+#selery
+Celery
+celery[redis]
+django-celery-results
+django-celery-beat
+flower

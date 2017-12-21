@@ -1,45 +1,90 @@
 {% extends 'base.html' %}
 {% load bootstrap3 %}
+{% load admin_urls %}
 
 {% block content %}
 
-    <style>
-        pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
-        .string { color: green; }
-        .number { color: darkorange; }
-        .boolean { color: blue; }
-        .null { color: magenta; }
-        .key { color: red; }
-    </style>
-    <script type="text/javascript">
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            {% for key, value in unknowns.0 %}
+                <th class="{{ key }}">
+                {{ key }}
+                </th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+            {% for d in unknowns %}
+            <tr>
+                {% for key, value in d %}
+                    {% if key == 'provider_add' %}
+                        <td class="{{ key }}">
+                        <a href="{{ value }}" target="_blank">Добавить как поставщик</a>
+                        </td>
+                    {% elif key == 'customer_add' %}
+                        <td class="{{ key }}">
+                        <a href="{{ value }}" target="_blank">Добавить как заказчик</a>
+                        </td>
+                    {% else %}
+                        <td class="{{ key }}">
+                        {{ value }}
+                        </td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-    function output(inp) {
-        document.body.appendChild(document.createElement('pre')).innerHTML = inp;
-    }
+    <br>
 
-    function syntaxHighlight(json) {
-        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-            var cls = 'number';
-            if (/^"/.test(match)) {
-                if (/:$/.test(match)) {
-                    cls = 'key';
-                } else {
-                    cls = 'string';
-                }
-            } else if (/true|false/.test(match)) {
-                cls = 'boolean';
-            } else if (/null/.test(match)) {
-                cls = 'null';
-            }
-            return '<span class="' + cls + '">' + match + '</span>';
-        });
-    }
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            {% for key, value in customers.0 %}
+                <th class="{{ key }}">
+                {{ key }}
+                </th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+            {% for d in customers %}
+            <tr>
+                {% for key, value in d %}
+                    <td class="{{ key }}">
+                    {{ value }}
+                    </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-{#    var obj = {a:1, 'b':'foo', c:[false,'false',null, 'null', {d:{e:1.3e5,f:'1.3e5'}}]};#}
-    var str = JSON.stringify({{ json|safe }}, undefined, 4);
+    <br>
 
-    output(syntaxHighlight(str));
-    </script>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            {% for key, value in providers.0 %}
+                <th class="{{ key }}">
+                {{ key }}
+                </th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+            {% for d in providers %}
+            <tr>
+                {% for key, value in d %}
+                    <td class="{{ key }}">
+                    {{ value }}
+                    </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
 {% endblock %}

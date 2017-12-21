@@ -1,0 +1,8 @@
+jupyter notebook --generate-config
+jupyter notebook password
+
+#https://github.com/twosigma/beakerx/issues/1963
+#   c.NotebookApp.allow_origin = '*'
+
+# http://django-configurations.readthedocs.io/en/stable/cookbook/#ipython-notebooks
+python manage.py shell_plus --notebook

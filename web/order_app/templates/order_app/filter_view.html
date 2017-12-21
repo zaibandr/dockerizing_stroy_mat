@@ -65,9 +65,7 @@
                         {icon: redIcon}
                     {% endif %}
                 )
-                marker.addTo(map).bindPopup('<a href="{% url 'order:order_detail' order.pk %}'+'/" title="Перейти на станицу заказа">'+'{{ order.address }}'+'</a><hr>'+
-                    '{{ order.product.name }} - '+'{{ order.provider.name }}<hr>'+
-                    'Объем: {{ order.volume }} - '+'{{ order.cost }}р');
+                marker.addTo(map).bindPopup('{{ order.popup|safe }}');
             {% endfor %}
 
 

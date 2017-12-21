@@ -3,6 +3,7 @@ from haystack.admin import SearchModelAdmin
 from leaflet.admin import LeafletGeoAdminMixin
 
 from .models import Product, Region, PickPoint
+from provider_app.admin import RegionsInline, PickPointsInline
 
 
 class CustomLeafletGeoAdminMixin(LeafletGeoAdminMixin):
@@ -18,12 +19,24 @@ admin.site.register(Product, ProductAdmin)
 
 
 class RegionAdmin(CustomLeafletGeoAdminMixin, admin.ModelAdmin):
-    list_display = ('description', )
+    list_display = ('pk', 'description', )
+    filter_horizontal = ('products', )
+
+    # inlines = [
+    #     RegionsInline,
+    #     PickPointsInline
+    # ]
 
 admin.site.register(Region, RegionAdmin)
 
 
 class PickPointAdmin(CustomLeafletGeoAdminMixin, admin.ModelAdmin):
-    list_display = ('description', )
+    list_display = ('pk', 'description', )
+    filter_horizontal = ('products',)
+
+    # inlines = [
+    #     RegionsInline,
+    #     PickPointsInline
+    # ]
 
 admin.site.register(PickPoint, PickPointAdmin)

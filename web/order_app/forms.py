@@ -1,4 +1,6 @@
 from django.forms import ModelForm, Textarea, ModelChoiceField, IntegerField, HiddenInput, Form
+
+from haystack.query import SQ, AutoQuery, SearchQuerySet
 from haystack.forms import SearchForm
 
 from core.forms import MySelect
@@ -70,4 +72,20 @@ class UpdateOrderForm(ModelForm):
 
 
 class OrderSearchForm(SearchForm):
-    pass
+    def search(self):
+        if not self.is_valid():
+            return self.no_query_found()
+
+        if not self.cleaned_data.get('q'):
+            return self.no_query_found()
+
+        q = self.cleaned_data['q']
+        sqs = self.searchqueryset.filter(
+            SQ(description=AutoQuery(q))
+            #SQ(text=AutoQuery(q)) | SQ(description=AutoQuery(q)) | SQ(address=AutoQuery(q))
+        )
+
+        if self.load_all:
+            sqs = sqs.load_all()
+
+        return sqs.highlight()

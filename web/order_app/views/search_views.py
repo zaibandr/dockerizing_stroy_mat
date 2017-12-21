@@ -17,7 +17,7 @@ def sqs_to_qs(search_qs):
 
 
 def autocomplete_order_id(request):
-    sqs = SearchQuerySet().autocomplete(text=request.GET.get('q', ''))[:10]
+    sqs = SearchQuerySet().autocomplete(text=request.GET.get('q', '')).highlight()[:10]
     suggestions = [result.pk for result in sqs]
 
     the_data = json.dumps([{'order': i} for i in suggestions])
@@ -42,13 +42,13 @@ def autocomplete_order_address(request):
 def order_search_form(request):
 
     form = OrderSearchForm(request.GET)
-    order_sqs = form.search()
+    search_sqs = form.search()
 
     # Elastic return list to django SQS
     # https://stackoverflow.com/questions/13642617/django-haystack-searchqueryset-to-queryset
-    orders = sqs_to_qs(order_sqs)
-    order_pk = [order.pk for order in orders]
-    orders = Order.objects.filter(pk__in=order_pk)
+
+    order_pk = [order.pk for order in [i.object.pk for i in search_sqs]]
+    orders = Order.objects.filter(pk__in=order_pk).select_related('product')
 
     # SQS to table (django-table2)
     orders = OrdersTable(orders)

@@ -1,0 +1,18 @@
+{% load render_table from django_tables2 %}
+
+<h4>Сальдо начальное</h4>
+{{ provider.saldo_date }}
+<p>Дебет: {{ provider.saldo_debet }}</p>
+<p>Кредит: {{ provider.saldo_credit }}</p>
+
+
+<h4>Транзакции банка</h4>
+{% render_table discharge_entity_table %}
+<p>Дебет: {{ ds_entity_debet }}</p>
+<p>Кредит: {{ ds_entity_credit }}</p>
+<br>
+
+<h4>Приходы</h4>
+{% render_table discharge_provider_table %}
+<p>Итого сумма : {{ ds_provider_values_sum }}</p>
+

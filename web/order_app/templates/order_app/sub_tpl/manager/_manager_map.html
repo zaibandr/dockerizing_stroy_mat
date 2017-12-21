@@ -17,9 +17,7 @@
                 [{{ n_s_o.latitude|stringformat:"f" }}, {{ n_s_o.longitude|stringformat:"f"}}],
                 {icon: blueIcon}
                 );
-            marker.bindPopup('<a href="{% url 'order:order_detail' n_s_o.pk %}'+'" title="Перейти на станицу заказа">'+'{{ n_s_o.address }}'+'</a><hr>'+
-                    '{{ n_s_o.product.name }} - '+'{{ n_s_o.provider.name }}<hr>'+
-                    'Объем: {{ n_s_o.volume }} - '+'{{ n_s_o.cost }}р');
+            marker.bindPopup('{{ n_s_o.popup|safe }}');
             km_10.push(marker);
         {% endfor %}
         console.log(km_10);
@@ -30,9 +28,7 @@
                 [{{ n_s_o.latitude|stringformat:"f" }}, {{ n_s_o.longitude|stringformat:"f"}}],
                 {icon: blueIcon}
                 );
-            marker.bindPopup('<a href="{% url 'order:order_detail' n_s_o.pk %}'+'" title="Перейти на станицу заказа">'+'{{ n_s_o.address }}'+'</a><hr>'+
-                    '{{ n_s_o.product.name }} - '+'{{ n_s_o.provider.name }}<hr>'+
-                    'Объем: {{ n_s_o.volume }} - '+'{{ n_s_o.cost }}р');
+            marker.bindPopup('{{ n_s_o.popup|safe }}');
             km_20.push(marker);
         {% endfor %}
         console.log(km_20);
@@ -51,7 +47,7 @@
         var marker = L.marker(
             [{{ order.latitude|stringformat:"f" }}, {{ order.longitude|stringformat:"f"}}],
             {icon: greenIcon}).addTo(map);
-        marker.bindPopup("{{ order.address }}").openPopup();
+        marker.bindPopup('{{ order.popup|safe }}').openPopup();
 
     }, false);
 </script>

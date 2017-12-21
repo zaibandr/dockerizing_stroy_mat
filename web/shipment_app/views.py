@@ -1,13 +1,15 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
-from django_tables2 import RequestConfig
+from django_tables2 import RequestConfig, SingleTableView
 
-from .forms import NewShipmentForm, EditShipmentForm
+from .forms import NewShipmentForm, UpdateShipmentManagerForm, UpdateShipmentSupplierForm, UpdateShipmentBookerForm
 from .models import Shipment
 from .tables import ShipmentTable
+from .tables import ManagerShipmentTable, SupplierShipmentTable, BookerShipmentTable
 
 
 @login_required()
@@ -29,7 +31,37 @@ def shipments(request):
     return render(request, 'shipment_app/shipment_list.html', context)
 
 
-class ShipmentDetailView(DetailView):
+class ShipmentList(LoginRequiredMixin, SingleTableView):
+    model = Shipment
+    template_name = 'shipment_app/shipment_list.html'
+
+    table_class = ''
+
+    table_pagination = {
+        'per_page': 10
+    }
+
+    def get_queryset(self):
+        group_name = User.objects.get(username=self.request.user).groups.values_list('name', flat=True)
+        if 'manager' in group_name:
+            self.queryset = Shipment.objects.filter(author=self.request.user)
+        else:
+            self.queryset = Shipment.objects.all()
+
+        return self.queryset
+
+    def get_table_class(self):
+        group_name = User.objects.get(username=self.request.user).groups.values_list('name', flat=True)
+        if 'manager' in group_name:
+            self.table_class = ManagerShipmentTable
+        elif 'supplier' in group_name:
+            self.table_class = SupplierShipmentTable
+        else:
+            self.table_class = BookerShipmentTable
+        return self.table_class
+
+
+class ShipmentDetailView(LoginRequiredMixin, DetailView):
 
     model = Shipment
 
@@ -40,10 +72,16 @@ class ShipmentDetailView(DetailView):
         return context
 
 
-class ShipmentAdd(CreateView):
+class ShipmentAdd(LoginRequiredMixin, CreateView):
     model = Shipment
     form_class = NewShipmentForm
     template_name = 'shipment_app/new_shipment.html'
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.author = self.request.user
+        obj.save()
+        return redirect('shipment:shipments_list')
 
 
 def new_shipment_form(request):
@@ -59,7 +97,7 @@ def new_shipment_form(request):
             ###########################
             new_shipment = form.save(commit=False)
 
-            new_shipment.author= User.objects.get(username=request.user)
+            new_shipment.author = User.objects.get(username=request.user)
 
             new_shipment.save()
 
@@ -72,8 +110,25 @@ def new_shipment_form(request):
     return render(request, "shipment_app/new_shipment.html", {'form': form})
 
 
-class EditShipment(UpdateView):
+class EditShipment(LoginRequiredMixin, UpdateView):
     model = Shipment
-    form_class = EditShipmentForm
+    form_class = ''
 
-    template_name = 'shipments/shipment_edit_form.html'
+    template_name = 'shipment_app/shipment_edit_form.html'
+
+    def get_form_class(self):
+        #super(EditShipment, self).get_form_class()
+        group_name = User.objects.get(username=self.request.user).groups.values_list('name', flat=True)
+        if 'manager' in group_name:
+            self.form_class = UpdateShipmentManagerForm
+        elif 'supplier' in group_name:
+            self.form_class = UpdateShipmentSupplierForm
+        else:
+            self.form_class = UpdateShipmentBookerForm
+        return self.form_class
+
+    def get_context_data(self, **kwargs):
+        context = super(EditShipment, self).get_context_data(**kwargs)
+        context['data'] = self.object.get_data_json()
+
+        return context

@@ -1,8 +1,12 @@
 server {
 
     listen 80;
-    #server_name panagoa.ru;
+    server_name nerud-mo.ru;
     charset utf-8;
+
+    location /robots.txt {
+        alias /usr/src/web/static/robots.txt;
+    }
 
     location /static {
         alias /usr/src/web/static;
@@ -15,3 +19,30 @@ server {
 
 
 }
+
+server {
+
+    listen 8888;
+
+    location / {
+        proxy_pass http://web:8888;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+}
+
+server {
+    listen 80;
+    server_name flower.nerud-mo.ru;
+    charset utf-8;
+
+    location / {
+        proxy_pass http://flower:5555;
+        proxy_set_header Host $host;
+        proxy_redirect off;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+

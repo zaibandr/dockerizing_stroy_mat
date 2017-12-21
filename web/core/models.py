@@ -1,5 +1,14 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+
+from django.contrib.postgres.fields import JSONField
+
+
+class AttributesModel(models.Model):
+    attributes = JSONField(verbose_name='Атрибуты', default={})
+
+    class Meta:
+        abstract = True
 
 
 class TimeStampedModel(models.Model):
@@ -25,14 +34,40 @@ class DescriptionModel(models.Model):
 
 
 class BalanceModel(models.Model):
-    balance = models.IntegerField(editable=False, default=0, verbose_name='Баланс')
+    balance = models.FloatField(editable=False, default=0, verbose_name='Баланс')
 
-    saldo_debet = models.IntegerField(default=0, verbose_name='Сальдо дебет')
-    saldo_credit = models.IntegerField(default=0, verbose_name='Сальдо кредит')
+    saldo_debet = models.FloatField(default=0, verbose_name='Сальдо дебет')
+    saldo_credit = models.FloatField(default=0, verbose_name='Сальдо кредит')
     saldo_date = models.DateField(null=True, default=None, blank=True, verbose_name='Салбдо дата')
 
     class Meta:
         abstract = True
+
+    def update_balance(self):
+        from discharge_app.models import DischargeEntity, DischargeProvider, DischargeCustomer
+
+        balance = self.saldo_credit - self.saldo_debet
+        for discharge in DischargeCustomer.objects.filter(customer__inn=self.inn):
+            if self.__class__.__name__ == 'Customer':
+                balance -= discharge.value
+            else:
+                balance += discharge.value
+
+        for discharge in DischargeProvider.objects.filter(provider__inn=self.inn):
+            if self.__class__.__name__ == 'Provider':
+                balance -= discharge.value
+            else:
+                balance += discharge.value
+
+        # транзакции с выписки банка
+        for de in DischargeEntity.objects.filter(entity__inn=self.inn):
+            if self.__class__.__name__ == 'Provider':
+                balance += de.debet - de.credit
+            elif self.__class__.__name__ == 'Customer':
+                balance += de.credit - de.debet
+
+        self.balance = balance
+        self.save()
 
 
 class MailModel(models.Model):
@@ -66,3 +101,15 @@ class DeliveryModel(models.Model):
 
     class Meta:
         abstract = True
+
+    def _address_prepare(self):
+        from geopy.geocoders import Yandex
+
+        geo_locator = Yandex()
+        location = geo_locator.geocode(self.address, timeout=10)
+        if location is None:
+            location = geo_locator.geocode('г Москва', timeout=10)
+            self.address = "Невозможно найти адрес! Убедитесь что адрес верный и повторите ввод."
+
+        self.longitude = location.longitude
+        self.latitude = location.latitude

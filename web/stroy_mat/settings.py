@@ -1,32 +1,9 @@
-from configurations import Configuration, values
-import os
-
-import sys
 import logging
+import os
+import sys
 
-from django.core.management.color import color_style
-
-
-class DjangoColorsFormatter(logging.Formatter):
-    def __init__(self, *args, **kwargs):
-        super(DjangoColorsFormatter, self).__init__(*args, **kwargs)
-        self.style = self.configure_style(color_style())
-
-    def configure_style(self, style):
-        style.DEBUG = style.HTTP_NOT_MODIFIED
-        style.INFO = style.HTTP_INFO
-        style.WARNING = style.HTTP_NOT_FOUND
-        style.ERROR = style.ERROR
-        style.CRITICAL = style.HTTP_SERVER_ERROR
-        return style
-
-    def format(self, record):
-        message = logging.Formatter.format(self, record)
-        if sys.version_info[0] < 3:
-            if isinstance(message, str):
-                message = message.encode('utf-8')
-        colorizer = getattr(self.style, record.levelname, self.style.HTTP_SUCCESS)
-        return colorizer(message)
+import raven
+from configurations import Configuration, values
 
 
 class Base(Configuration):
@@ -88,10 +65,14 @@ class Base(Configuration):
 
         'notifications',
 
-        'cacheops'
+        'cacheops',
+        'django_extensions',
+        'raven.contrib.django.raven_compat',
     ]
 
     MIDDLEWARE = [
+        #'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
+
         'django.middleware.security.SecurityMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -189,6 +170,22 @@ class Prod(Base):
     # # you need to specify a region, like so:
     # AWS_SES_REGION_NAME = 'eu-west-1'
     # AWS_SES_REGION_ENDPOINT = 'email-smtp.eu-west-1.amazonaws.com'
+    EMAIL_HOST = 'smtp.yandex.ru'
+    EMAIL_HOST_USER = 'zaibandr@ya.ru'
+    EMAIL_HOST_PASSWORD = ')(00ungYble'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+
+    Base.INSTALLED_APPS += [
+        'django_json_widget',
+        'django_celery_results',
+        'django_celery_beat',
+
+        'mail_app'
+    ]
+
+    CELERY_RESULT_BACKEND = 'django-db'
+    CELERYBEAT_SCHEDULER = "djcelery.schedulers.DatabaseScheduler"
 
     DATABASES = {
         'default': {
@@ -201,18 +198,6 @@ class Prod(Base):
         }
     }
 
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-    #         'NAME': os.environ['DB_NAME'],
-    #         'USER': os.environ['DB_USER'],
-    #         'PASSWORD': os.environ['DB_PASS'],
-    #         'HOST': os.environ['DB_SERVICE'],
-    #         'PORT': '5445'
-    #     }
-    # }
-
-    # SECRET_KEY = os.environ['SECRET_KEY']
 
     HAYSTACK_CONNECTIONS = {
         'default': {
@@ -252,12 +237,18 @@ class Prod(Base):
         'debug_toolbar.panels.redirects.RedirectsPanel',
     ]
 
+    def show_toolbar(request):
+        return True
+
+    SHOW_TOOLBAR_CALLBACK = show_toolbar
+
     DEBUG_TOOLBAR_CONFIG = {
         'INTERCEPT_REDIRECTS': False,
         'SHOW_TEMPLATE_CONTEXT': True,
+        "SHOW_TOOLBAR_CALLBACK": show_toolbar,
     }
 
-    INTERNAL_IPS = ('127.0.0.1', '46.39.230.142', '46.39.230.119', '188.120.229.184', '172.17.0.6')
+    INTERNAL_IPS = ('127.0.0.1', '104.27.175.77',  '46.39.230.142', '46.39.230.119', '188.120.229.184', '172.17.0.6')
 
     # redis and cacheops
     CACHEOPS_REDIS = {
@@ -276,44 +267,74 @@ class Prod(Base):
 
     CACHEOPS = {
         'auth.user': {'ops': 'get', 'timeout': 60 * 15},
+        'order_app.order': {'ops': ('fetch', 'get'), 'timeout': 60 * 15},
         '*.*': {},
         #'*.*': {'ops': 'all', 'timeout': 60 * 60 * 2},
     }
 
+    # CACHES = {
+    #     "default": {
+    #         "BACKEND": "django_redis.cache.RedisCache",
+    #         "LOCATION": "redis://{}:6379/1".format(os.environ['REDIS_HOST']),
+    #         "OPTIONS": {
+    #             "CLIENT_CLASS": "django_redis.client.DefaultClient"
+    #         },
+    #         "KEY_PREFIX": "example"
+    #     }
+    # }
+
     LOGGING = {
         'version': 1,
-        'disable_existing_loggers': False,
+        'disable_existing_loggers': True,
+        'root': {
+            'level': 'WARNING',
+            'handlers': ['sentry'],
+        },
         'formatters': {
-            'colored': {
-                '()': DjangoColorsFormatter,
-                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
-                'datefmt': '%d/%b/%Y %H:%M:%S',
+            'verbose': {
+                'format': '%(levelname)s %(asctime)s %(module)s '
+                          '%(process)d %(thread)d %(message)s'
             },
         },
         'handlers': {
+            'sentry': {
+                'level': 'ERROR',  # To capture more than ERROR, change to WARNING, INFO, etc.
+                'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+                'tags': {'custom-tag': 'x'},
+            },
             'console': {
                 'level': 'DEBUG',
                 'class': 'logging.StreamHandler',
-                'formatter': 'colored',
-            },
-
-            'file': {
-                'level': 'DEBUG',
-                'class': 'logging.FileHandler',
-                'filename': os.path.join(BASE_DIR, 'debug.log'),
-            },
+                'formatter': 'verbose'
+            }
         },
         'loggers': {
-            # 'django.db.backends': {
-            #     'level': 'DEBUG',
-            #     'handlers': ['file'],
-            # },
-
-            'stroy_mat': {
+            'django.db.backends': {
+                'level': 'ERROR',
                 'handlers': ['console'],
-                'propagate': True,
-                'level': 'INFO',
+                'propagate': False,
+            },
+            'raven': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+                'propagate': False,
+            },
+            'sentry.errors': {
+                'level': 'DEBUG',
+                'handlers': ['console'],
+                'propagate': False,
             },
         },
+    }
 
+
+    RAVEN_CONFIG = {
+        # dev
+        'dsn': 'https://bb3a6ea9b2df45c8940397201e3f5669:2475e16b3bbc43c2932d25ffe01e7e9d@sentry.io/253753',
+        # prod
+        # 'dsn': 'https://f529364d8b3f48348c41d16de970fba5:a0a60c19a25345a3945166447d723bbc@sentry.io/253759',
+
+        # If you are using git, you can also automatically configure the
+        # release based on the git info.
+        #'release': raven.fetch_git_sha(os.path.abspath(os.pardir)),
     }

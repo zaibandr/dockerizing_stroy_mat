@@ -4,8 +4,13 @@
 {% block title %}Изменить отгрузку{% endblock %}
 
 {% block content %}
+    {% for field in data %}
+        <p>{{ field }}</p>
+    {% endfor %}
+
+
     <h1>Изменить отгрузку</h1>
-        <form action="{% url 'shipment_edit' pk=order.pk%}" method="post" class="form-horizontal">
+        <form action="{% url 'shipment:shipment_edit' shipment.pk %}" method="post" class="form-horizontal">
             {% csrf_token %}
             {% bootstrap_form form layout="horizontal"%}
 
@@ -15,9 +20,9 @@
 
         </form>
 
-    {% include "has_app/sub_tpl/_select_picker.html" %}
+    {% include "core/_select_picker.html" %}
 
-    {% include "has_app/sub_tpl/_address_suggestion.html" %}
+    {% include "core/_address_suggestion.html" %}
 
 
 {% endblock %}

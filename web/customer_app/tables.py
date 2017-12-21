@@ -9,7 +9,7 @@ from .models import Customer
 class CustomerNameColumn(tables.Column):
     def render(self, value, record):
         return format_html('<a href="{}"><p class="text-left">{}</p></a>',
-                           reverse('customer:detail', kwargs={'pk': record.pk}),
+                           reverse('customer:customer_detail', kwargs={'pk': record.pk}),
                            value)
 
 

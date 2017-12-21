@@ -5,116 +5,52 @@
 {% load leaflet_tags %}
 
 {% block title %}
-{{ provider.name }} :: Поставщик
+{{ customer.name }} :: Заказчик
 {% endblock title %}
 
 {% block content %}
-    <h1>{{ provider.name }}</h1>
-    {% if product_filter == 'all'%}
-        <h2>Заказы (Все)</h2>
-    {% else %}
-        <h2>Заказы ({{ product_filter }})</h2>
+    <h1>{{ customer.name }}
+    {% if user.is_staff %}
+        <a href="{% url 'admin:customer_app_customer_change' customer.pk %}"
+                       role="button" target="_blank" title="Изменить заказчика" class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+        </a>
     {% endif %}
 
+    </h1>
+
     <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#panel1">Инфо</a></li>
-        <li><a data-toggle="tab" href="#panel2">Продукция</a></li>
-        <li><a data-toggle="tab" href="#panel3">Заказы</a></li>
+        <li class="active"><a data-toggle="tab" href="#info-panel">Инфо</a></li>
+        <li><a data-toggle="tab" href="#shipment-panel">Отгрузки</a></li>
+        <li><a data-toggle="tab" href="#transactions-panel">Транзакции</a></li>
     </ul>
 
     <div class="tab-content">
-        <div id="panel1" class="tab-pane fade in active">
-            <h3>Информация поставщика</h3>
-            <p>Поставщик: {{ provider.name }}</p>
-            <p>Информация: {{ provider.contact_name }}</p>
-            <p>Телефон: {{ provider.phone_number }}</p>
+        <div id="info-panel" class="tab-pane fade in active">
+            <h3>Информация Заказчика</h3>
+            <p>Заказчик: {{ customer.name }}</p>
+            <p>ИНН: {{ customer.inn }}</p>
+            <p>Баланс: {{ customer.balance }}</p>
+            <p>Информация: {{ customer.contact_name }}</p>
+            <p>Телефон: {{ customer.phone_number }}</p>
 
-            <p>Почта: <br> {{ provider.mail_1 }} <br> {{ provider.mail_2 }}</p>
-
-        </div>
-        <div id="panel2" class="tab-pane fade">
-            <h3>Список наименований поставщика</h3>
-
-            {% for product in provider.products.all %}
-                {{ product.name }}
-                <br>
-            {% endfor %}
+            <p>Почта: <br> {{ customer.mail_1 }} <br> {{ customer.mail_2 }}</p>
 
         </div>
-        <div id="panel3" class="tab-pane fade">
-            <h3>Список заказов</h3>
+        <div id="shipment-panel" class="tab-pane fade">
+            <h3>Отгрузки заказчика</h3>
 
-            {% render_table provider_orders_table %}
+            {% render_table shipments_table %}
+
+        </div>
+
+        <div id="transactions-panel" class="tab-pane fade">
+                <h3>Транзакции</h3>
+
+                {% include "customer_app/_transactions.html" %}
+
         </div>
     </div>
 
-
-
-
-
-
-    {% leaflet_js %}
-    {% leaflet_css %}
-
-    <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
-
-    {% leaflet_map "main" %}
-
-
-    <script type="text/javascript">
-        window.addEventListener("map:init", function (e) {
-            var map = e.detail.map;
-
-            var greenIcon = new L.Icon({
-              iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
-              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-              iconSize: [25, 41],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
-              shadowSize: [41, 41]
-            });
-
-            var redIcon = new L.Icon({
-              iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-              iconSize: [25, 41],
-              iconAnchor: [12, 41],
-              popupAnchor: [1, -34],
-              shadowSize: [41, 41]
-            });
-
-
-
-
-            var poly = L.polygon({{ poly_coord }}, {
-                    color: 'red',
-                    fillColor: 'blue',
-                    fillOpacity: 0.5
-                }
-                ).addTo(map).bindPopup("{{ provider.name }}");
-
-            {% for p_o in provider_orders %}
-                var marker = L.marker(
-                    [{{ p_o.latitude|stringformat:"f" }}, {{ p_o.longitude|stringformat:"f"}}],
-                    {icon: greenIcon}
-                    );
-                marker.addTo(map).bindPopup('<a href="/order/detail/'+'{{ p_o.pk }}'+'/" title="Перейти на станицу заказа">'+'{{ p_o.address }}'+'</a><hr>'+
-                    '{{ p_o.product.name }} - '+'{{ p_o.provider.name }}<hr>'+
-                    'Объем: {{ p_o.volume }} - '+'{{ p_o.cost }}р');
-            {% endfor %}
-
-            {% for k, v in cost_center.items %}
-                var marker = L.marker(
-                    {{ v }},
-                    {icon: redIcon}
-                    );
-                marker.addTo(map).bindPopup("{{ k }}");
-            {% endfor %}
-
-
-
-
-        }, false);
-    </script>
 
 {% endblock %}

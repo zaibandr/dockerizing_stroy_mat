@@ -1,4 +1,5 @@
-from django.forms import ModelForm, Textarea, Select
+from django.forms import ModelForm, Textarea, Select, SelectDateWidget
+from django.contrib.admin.widgets import AdminDateWidget
 
 from shipment_app.models import Shipment
 
@@ -14,40 +15,50 @@ class NewShipmentForm(ModelForm):
     class Meta:
         model = Shipment
         fields = [
-            'product',
-            'customer',
-            'provider',
-            'transporter',
-            'address',
-
-            'description',
-
-            'volume',
-            'cost_in',
-            'cost_out',
-
-            'stamp',
-            'confidant',
-
-            'price_delivery',
-
-
-
-            'author',
-            'status',
-            'price',
-            'profit'
+            'deliver',
+            'product', 'customer', 'provider', 'transporter', 'address',
+            'volume_m',
+            'cost_in', 'cost_out', 'price_delivery'
         ]
-
-        exclude = ['author', 'status', 'price', 'profit']
 
         widgets = {
             'description': Textarea(attrs={'cols': 40, 'rows': 4}),
             'product': MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'}),
             'customer': MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'}),
             'provider': MySelect(attrs={'class': 'selectpicker', 'data-live-search': 'true'}),
+            'deliver': SelectDateWidget()
         }
 
 
-class EditShipmentForm(NewShipmentForm):
-    pass
+class UpdateShipmentManagerForm(ModelForm):
+    class Meta:
+        model = Shipment
+        fields = [
+            'deliver',
+            'product', 'customer', 'provider', 'transporter', 'address',
+            'volume_m',
+            'cost_in', 'cost_out', 'price_delivery'
+        ]
+
+
+class UpdateShipmentSupplierForm(ModelForm):
+    class Meta:
+        model = Shipment
+        fields = [
+            'provider',
+            'volume_s', 'cost_in', 'cost_out',
+            'stamp', 'confidant',
+            'price_delivery',
+        ]
+
+
+class UpdateShipmentBookerForm(ModelForm):
+    class Meta:
+        model = Shipment
+        fields = [
+            'volume_b',
+            'ttn',
+            'provider_invoice_number', 'customer_invoice_number',
+            'provider_document',
+            'customer_document'
+        ]

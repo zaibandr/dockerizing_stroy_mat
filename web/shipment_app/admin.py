@@ -5,13 +5,14 @@ from .models import Shipment
 
 class ShipmentAdmin(admin.ModelAdmin):
     fields = (
-        'product', 'volume', 'customer', 'provider', 'transporter',
+        'product', 'author', 'volume_m', 'volume_s', 'volume_b',
+        'customer', 'provider', 'transporter',
         'status', 'stamp', 'confidant', 'cost_in', 'cost_out',
-        'price_delivery', 'delivered', 'confirmed',
+        'price_delivery', 'deliver', 'confirmed',
 
     )
     list_display = (
-        'product', 'volume', 'customer', 'provider',
+        'id', 'product', 'volume_m', 'customer', 'provider',
         'status', 'stamp', 'cost_in', 'cost_out',)
     list_filter = ('status', 'product__name', 'customer__name', 'provider__name')
 
@@ -27,7 +28,6 @@ class ShipmentAdmin(admin.ModelAdmin):
     # get_product.admin_order_field = 'product__name'
     # get_customer.admin_order_field = 'customer__name'
     # get_provider.admin_order_field= 'provider__name'
-
 
     # search_fields = ('pk', 'name', 'contact_name')
 

@@ -4,15 +4,13 @@ from django.utils import timezone
 from django.views.generic.detail import DetailView
 from django_tables2 import RequestConfig
 
-
+from order_app.viewmixins import CommentMixin, NotificationMixin, NearSimilarMixin
 from order_app.models import Order
 from order_app.tables import OrdersTable
 from order_app.viewmixins import ProviderTableMixin, NotifiedProviderTableMixin, GeoJsonMixin
-from order_app.viewmixins import CommentMixin, NotificationMixin, NearSimilarMixin
 
 
 @login_required()
-#@cached_as(Order, timeout=60*5)
 def orders(request, status='all'):
     if request.user.is_staff:
         all_orders_sqs = Order.objects.all().select_related('product')
@@ -38,7 +36,8 @@ def orders(request, status='all'):
 
 
 class OrderDetailView(NearSimilarMixin, CommentMixin, NotificationMixin, ProviderTableMixin,
-                      GeoJsonMixin, NotifiedProviderTableMixin, DetailView):
+                      GeoJsonMixin,
+                      NotifiedProviderTableMixin, DetailView):
 
     model = Order
 

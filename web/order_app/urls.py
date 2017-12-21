@@ -5,12 +5,11 @@ from comment_app.views import add_comment_to_order
 from smsnotify_app.views import provider_notify, notify_cost
 from .views import OrderDetailView, EditOrder, OrderUpdate
 from .views import filters_views
-from .views import orders, new_order_form, new_order_with_formset
+from .views import orders, new_order_with_formset
 from .views import search_views
 
 urlpatterns = [
     url(r'^m/', include([
-        url(r'^new/$', permission_required('order_app.add_order')(new_order_form), name='new_order_form'),
         url(r'^new_formset/$', permission_required('order_app.add_order')(new_order_with_formset),
             name='new_order_formset'),
         url(r'^edit/(?P<pk>[0-9]+)$', permission_required('order_app.change_order')(EditOrder.as_view()),

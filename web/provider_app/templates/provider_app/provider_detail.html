@@ -3,29 +3,44 @@
 {% load render_table from django_tables2 %}
 {% load bootstrap3 %}
 {% load leaflet_tags %}
+{% load admin_urls %}
 
 {% block title %}
 {{ provider.name }} :: Поставщик
 {% endblock title %}
 
 {% block content %}
-    <h1>{{ provider.name }}</h1>
-    {% if product_filter == 'all'%}
-        <h2>Заказы (Все)</h2>
-    {% else %}
-        <h2>Заказы ({{ product_filter }})</h2>
+    <h1>{{ provider.name }}
+    {% if user.is_staff %}
+        <a href="{% url 'admin:provider_app_provider_change' provider.pk %}"
+                       role="button" target="_blank" title="Изменить поставщика" class="btn btn-default btn-sm">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+        </a>
     {% endif %}
+    </h1>
+
+{#    {% if product_filter == 'all'%}#}
+{#        <h2>Заказы (Все)</h2>#}
+{#    {% else %}#}
+{#        <h2>Заказы ({{ product_filter }})</h2>#}
+{#    {% endif %}#}
 
     <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#panel1">Инфо</a></li>
         <li><a data-toggle="tab" href="#panel2">Продукция</a></li>
         <li><a data-toggle="tab" href="#panel3">Заказы</a></li>
+
+        <li><a data-toggle="tab" href="#shipments-panel">Отгрузки</a></li>
+        <li><a data-toggle="tab" href="#transactions-panel">Транзакции</a></li>
+
     </ul>
 
     <div class="tab-content">
         <div id="panel1" class="tab-pane fade in active">
             <h3>Информация поставщика</h3>
             <p>Поставщик: {{ provider.name }}</p>
+            <p>ИНН: {{ provider.inn }}</p>
+            <p>Баланс: {{ provider.balance }}</p>
             <p>Информация: {{ provider.contact_name }}</p>
             <p>Телефон: {{ provider.phone_number }}</p>
 
@@ -34,10 +49,22 @@
         </div>
         <div id="panel2" class="tab-pane fade">
             <h3>Список наименований поставщика</h3>
-
-            {% for product in provider.products.all %}
-                {{ product.name }}
-                <br>
+            <h3>Регионы поставок:</h3>
+            {% for region in provider.regions.all %}
+                <h4>{{ region.description }}</h4>
+                {% for product in region.products.all %}
+                    {{ product.name }}
+                    <br>
+                {% endfor %}
+            {% endfor %}
+            <br>
+            <h3>Пункты самовывоза:</h3>
+            {% for pick_point in provider.pick_points.all %}
+                <h4>{{ pick_point.description }}</h4>
+                {% for product in pick_point.products.all %}
+                    {{ product.name }}
+                    <br>
+                {% endfor %}
             {% endfor %}
 
         </div>
@@ -46,6 +73,20 @@
 
             {% render_table provider_orders_table %}
         </div>
+
+        <div id="shipments-panel" class="tab-pane fade">
+            <h3>Список отгрузок</h3>
+
+            {% render_table shipments_table %}
+        </div>
+
+        <div id="transactions-panel" class="tab-pane fade">
+                <h3>Транзакции</h3>
+
+                {% include "provider_app/_transactions.html" %}
+
+        </div>
+
     </div>
 
     {% leaflet_js %}
@@ -62,19 +103,24 @@
 
             {% include "core/_leaflet_icons.html" %}
 
-            var poly = L.polygon({{ poly_coord }}, {
-                    color: 'red',
-                    fillColor: 'blue',
-                    fillOpacity: 0.5
+            L.geoJSON({{ geo_json|safe }}, {
+                style: function (feature) {
+                    return {
+                        color: feature.properties.color,
+                        fillColor: feature.properties.fillColor,
+                        fillOpacity: feature.properties.fillOpacity
+                    };
                 }
-                ).addTo(map).bindPopup("{{ provider.name }}");
+            }).bindPopup(function (layer) {
+                return layer.feature.properties.popup;
+            }).addTo(map);
 
             {% for p_o in provider_orders %}
                 var marker = L.marker(
                     [{{ p_o.latitude|stringformat:"f" }}, {{ p_o.longitude|stringformat:"f"}}],
                     {icon: greenIcon}
                     );
-                marker.addTo(map).bindPopup('<a href="{% url 'order:order_detail' n_s_o.pk %}'+'/" title="Перейти на станицу заказа">'+'{{ p_o.address }}'+'</a><hr>'+
+                marker.addTo(map).bindPopup('<a href="{% url 'order:order_detail' p_o.pk %}'+'/" title="Перейти на страницу заказа">'+'{{ p_o.address }}'+'</a><hr>'+
                     '{{ p_o.product.name }} - '+'{{ p_o.provider.name }}<hr>'+
                     'Объем: {{ p_o.volume }} - '+'{{ p_o.cost }}р');
             {% endfor %}

@@ -1,8 +1,8 @@
 from django_filters.views import FilterView
 from django_tables2 import SingleTableView
 
-from order_app.filters import OrderFilter
 from order_app.models import Order
+from order_app.filters import OrderFilter
 from order_app.tables import OrdersTable
 
 
@@ -22,4 +22,7 @@ class FilteredOrderListView(FilterView, SingleTableView):
         'per_page': 50
     }
 
-# orders_filter = cached_view_as(Order)(FilteredOrderListView.as_view())
+    def get_context_data(self, **kwargs):
+        context = super(FilteredOrderListView, self).get_context_data(**kwargs)
+
+        return context

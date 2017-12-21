@@ -25,7 +25,7 @@ class Region(DescriptionModel, models.Model):
         verbose_name_plural = 'Области доставок'
 
     def __str__(self):
-        return self.description
+        return '№{}: {}'.format(self.pk, self.description)
 
 
 class PickPoint(DescriptionModel, models.Model):
